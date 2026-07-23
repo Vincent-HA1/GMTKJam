@@ -202,10 +202,10 @@ public class BaseEnemy : MonoBehaviour
 
     void DropFood()
     {
-        float random = (float)UnityEngine.Random.Range(1, 11) / 10;
-        if (random <= chanceForFoodDrop)
-        {
-            Instantiate(foodPrefab, transform.position, Quaternion.identity, null);
-        }
+        //float random = (float)UnityEngine.Random.Range(1, 11) / 10;
+        //if (random <= chanceForFoodDrop)
+        //{
+        //    Instantiate(foodPrefab, transform.position, Quaternion.identity, null);
+        //}
     }
 }

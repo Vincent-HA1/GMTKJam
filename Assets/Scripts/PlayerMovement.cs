@@ -141,6 +141,9 @@ public class PlayerMovement : MonoBehaviour
         //Prevent player from moving and play the victory animation after they land
         blockHorizontalMovement = true;
         verticalVelocity = 0;
+        movementInput = new Vector2();
+        //For now
+        anim.SetFloat("Speed", 0);
         yield return new WaitUntil(() => onGround);
         anim.SetBool("Victory", true);
         anim.updateMode = AnimatorUpdateMode.UnscaledTime;

@@ -15,11 +15,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] PlayerMovement player;
     [SerializeField] PauseMenu pauseMenu;
     [SerializeField] Animator sceneFadeAnimator;
+    [SerializeField] List<Checkpoint> checkpointList;
 
 
     public static bool cannotAct = false;
 
     bool respawning = false;
+    Checkpoint currentCheckpoint;
 
     private void Awake()
     {
@@ -29,8 +31,10 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        hudManager.InitialiseUI(); //fill with player stats health
+        if(hudManager)hudManager.InitialiseUI(); //fill with player stats health
+        currentCheckpoint = checkpointList[0];
         BindEvents();
+        SaveGame(); //save here
         StartCoroutine(WaitForSceneFade());
     }
 
@@ -41,6 +45,20 @@ public class GameManager : MonoBehaviour
         player.Healed += UpdateHealth;
         player.Hit += UpdateHealth;
         player.Death += Respawn;
+
+        //Checkpoints
+        foreach (Checkpoint checkpoint in checkpointList)
+        {
+            if (!checkpoint.isEndFlag)
+            {
+                checkpoint.CheckpointReached += UpdateCurrentCheckpoint;
+            }
+            else
+            {
+                //Final flag ends the level
+                checkpoint.CheckpointReached += EndLevel;
+            }
+        }
     }
 
     IEnumerator WaitForSceneFade()
@@ -76,7 +94,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
         yield return new WaitUntil(() => sceneFadeAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
         hudManager.UpdateHealthAmount(player.MaxHealth);
-        player.Respawn(new Vector3(0, 0.28f)); //set position for now
+        player.Respawn(currentCheckpoint.GetPosition()); //set position for now
         yield return new WaitForSeconds(0.5f);
         //if (movingSpikes) movingSpikes.SetPosition();
         sceneFadeAnimator.SetTrigger("FadeIn");
@@ -86,16 +104,44 @@ public class GameManager : MonoBehaviour
         respawning = false;
     }
 
+    void UpdateCurrentCheckpoint(Checkpoint checkpoint)
+    {
+        print(checkpoint);
+        currentCheckpoint = checkpoint;
+    }
+
+
+    void EndLevel(Checkpoint endFlag)
+    {
+        cannotAct = true;
+        //Player reached end of stage
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        print(currentSceneIndex);
+        print(SceneManager.sceneCountInBuildSettings - 1);
+        if(currentSceneIndex >= SceneManager.sceneCountInBuildSettings - 1)
+        {
+            //WE'RE AT THE END OF THE GAME. DO SOMETHING
+            //For now, return to title
+            ReturnToTitle();
+        }
+        else
+        {
+            player.ReachedEndOfLevel();
+            LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
         
     }
 
+    //Save at start and end of level
     void SaveGame()
     {
         //Create the instance of SaveData and save the game
-        SaveData data = new SaveData(optionsManager.GetOptions());
+        SaveData data = new SaveData(optionsManager.GetOptions(), SceneManager.GetActiveScene().buildIndex);
         SaveSystem.Save(data);
 
     }
@@ -104,32 +150,36 @@ public class GameManager : MonoBehaviour
     void LoadGame()
     {
         SaveData saveData = SaveSystem.Load();
-        //Restore saved options
-        optionsManager.SetOptions(saveData != null ? saveData.options : new Options());
+        if (saveData != null)
+        {
+            //Restore saved options
+            optionsManager.SetOptions(saveData != null ? saveData.options : new Options());
+        }
+
     }
 
     void ReturnToTitle()
     {
-        LoadScene("TitleScreen");
+        LoadScene(0);
     }
 
-    void LoadScene(string sceneName)
+    void LoadScene(int sceneIndex)
     {
-        StartCoroutine(LoadSceneAfterFade(sceneName));
+        StartCoroutine(LoadSceneAfterFade(sceneIndex));
         EventSystem.current.enabled = false;
     }
 
-    IEnumerator LoadSceneAfterFade(string sceneToLoad)
+    IEnumerator LoadSceneAfterFade(int sceneIndex)
     {
         sceneFadeAnimator.SetTrigger("FadeOut");
         yield return new WaitForEndOfFrame();
         yield return new WaitUntil(() => sceneFadeAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
-        SceneManager.LoadScene(sceneToLoad); //Filler for now
+        SceneManager.LoadScene(sceneIndex); 
     }
 
     private void OnApplicationQuit()
     {
         //Default for now
-        SaveGame();
+        //SaveGame();
     }
 }

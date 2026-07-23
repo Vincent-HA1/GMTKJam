@@ -40,9 +40,11 @@ public static class SaveSystem
 public class SaveData
 {
     public Options options;
+    public int levelIndex;
 
-    public SaveData(Options options)
+    public SaveData(Options options, int levelIndex)
     {
         this.options = options;
+        this.levelIndex = levelIndex;
     }
 }

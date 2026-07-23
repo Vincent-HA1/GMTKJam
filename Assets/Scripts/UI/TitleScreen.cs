@@ -11,12 +11,14 @@ public class TitleScreen : MonoBehaviour
     [SerializeField] InputHandler inputHandler;
 
     [Header("UI References")]
-    [SerializeField] Button startButton;
+    [SerializeField] Button newGameButton;
+    [SerializeField] Button continueGameButton;
     [SerializeField] Button quitButton;
     [SerializeField] GameObject titleScreen;
     [SerializeField] GameObject optionsScreen;
 
     EventSystem eventSystem;
+    SaveData saveToLoad;
 
     // Start is called before the first frame update
     void Start()
@@ -27,9 +29,22 @@ public class TitleScreen : MonoBehaviour
         eventSystem = EventSystem.current;
         eventSystem.enabled = false;
         Time.timeScale = 1;
-        startButton.onClick.AddListener(LoadScene);
+        CheckForSave();
+        newGameButton.onClick.AddListener(() => StartGame());
+        continueGameButton.onClick.AddListener(() => StartGame(true));
         quitButton.onClick.AddListener(QuitGame);
         StartCoroutine(WaitForSceneFade());
+    }
+
+    void CheckForSave()
+    {
+        //See if there is anything to continue from
+        saveToLoad = SaveSystem.Load();
+        if (saveToLoad != null)
+        {
+            //enable continue
+            continueGameButton.gameObject.SetActive(true);
+        }
     }
 
     IEnumerator WaitForSceneFade()
@@ -37,7 +52,14 @@ public class TitleScreen : MonoBehaviour
         //Wait for screen wipe before allowing input
         yield return new WaitUntil(() => sceneFadeAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
         eventSystem.enabled = true;
-        eventSystem.SetSelectedGameObject(startButton.gameObject);
+        if (continueGameButton.isActiveAndEnabled)
+        {
+            eventSystem.SetSelectedGameObject(continueGameButton.gameObject);
+        }
+        else
+        {
+            eventSystem.SetSelectedGameObject(newGameButton.gameObject);
+        }
     }
 
     private void Update()
@@ -45,19 +67,31 @@ public class TitleScreen : MonoBehaviour
 
     }
 
-
-    void LoadScene()
+    void StartGame(bool loadSave = false)
     {
-        StartCoroutine(LoadSceneAfterFade());
+        if (loadSave)
+        {
+            //Load saved scene
+            LoadScene(saveToLoad.levelIndex);
+        }
+        else
+        {
+            LoadScene(SceneManager.GetActiveScene().buildIndex + 1); // load next scene
+        }
+    }
+
+    void LoadScene(int sceneIndex)
+    {
+        StartCoroutine(LoadSceneAfterFade(sceneIndex));
         EventSystem.current.enabled = false;
     }
 
-    IEnumerator LoadSceneAfterFade()
+    IEnumerator LoadSceneAfterFade(int sceneIndex)
     {
         sceneFadeAnimator.SetTrigger("FadeOut");
         yield return new WaitForEndOfFrame();
         yield return new WaitUntil(() => sceneFadeAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
-        SceneManager.LoadScene("TestScene"); //Filler for now
+        SceneManager.LoadScene(sceneIndex); 
     }
 
     void QuitGame()
