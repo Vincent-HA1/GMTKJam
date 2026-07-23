@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
     {
         hudManager.InitialiseUI(); //fill with player stats health
         BindEvents();
+        StartCoroutine(WaitForSceneFade());
     }
 
     void BindEvents()
@@ -40,6 +41,15 @@ public class GameManager : MonoBehaviour
         player.Healed += UpdateHealth;
         player.Hit += UpdateHealth;
         player.Death += Respawn;
+    }
+
+    IEnumerator WaitForSceneFade()
+    {
+        cannotAct = true;
+        yield return new WaitForEndOfFrame();
+        //if (movingSpikes) movingSpikes.SetPosition();
+        yield return new WaitUntil(() => sceneFadeAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
+        cannotAct = false;
     }
 
     void UpdateHealth(float health)

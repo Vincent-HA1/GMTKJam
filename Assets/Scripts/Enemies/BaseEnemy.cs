@@ -1,0 +1,211 @@
+using System;
+using System.Collections;
+using UnityEngine;
+
+public class BaseEnemy : MonoBehaviour
+{
+
+    public Action Hit;
+    public Action Death;
+
+    public LayerMask playerLayer;
+
+    [Header("References")]
+    [SerializeField] GameObject deathExplosionPrefab;
+    [SerializeField] GameObject foodPrefab;
+
+
+    [Header("Enemy Attributes")]
+    [SerializeField] float maxHealth;
+    [SerializeField] bool patrol = true;
+    [SerializeField] float hurtTime = 0.5f;
+    [SerializeField] float minPatrolTime = 1.5f;
+    [SerializeField] float maxPatrolTime = 2;
+    [SerializeField] float minWaitTime = 1;
+    [SerializeField] float maxWaitTime = 1.25f;
+    [SerializeField] protected float detectionRadius = 2;
+    [SerializeField] float maxDistanceToPlayer = 5f;
+
+
+    [Header("Miscellaneous")]
+    [SerializeField] float chanceForFoodDrop = 0.2f;
+
+    protected Transform player;
+    protected Vector2 moveDirection;
+
+    protected float moveTimer;
+    protected float waitTimer;
+
+    protected bool moving = false;
+    protected bool hurt = false;
+    protected bool playerDetected = false;
+    protected bool playerTooFar = false;
+    protected Rigidbody2D rigid;
+    protected Animator anim;
+    protected BoxCollider2D boxCollider;
+
+    private float hurtTimer;
+    private float health;
+    private SpriteRenderer spriteRenderer;
+    private EnemyHitFlash hitFlash;
+    // Start is called before the first frame update
+    protected virtual void Start()
+    {
+        health = maxHealth;
+        anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        hitFlash = GetComponent<EnemyHitFlash>();
+        rigid = GetComponent<Rigidbody2D>();
+        boxCollider = GetComponent<BoxCollider2D>();
+        //randomly decide start direction
+        moveDirection = new Vector2(UnityEngine.Random.Range(0, 2) == 0 ? 1 : -1, 0);
+    }
+
+    // Update is called once per frame
+    protected virtual void Update()
+    {
+        CheckHurtTimer();
+        ManageMoveTimers();
+        UpdateAnims();
+        DetectPlayer();
+    }
+
+    void CheckHurtTimer()
+    {
+        if (hurt)
+        {
+            hurtTimer -= Time.deltaTime;
+            if (hurtTimer <= 0)
+            {
+                ResumeFromGettingHit();
+            }
+        }
+
+    }
+
+    protected virtual void ResumeFromGettingHit()
+    {
+        hurt = false;
+    }
+
+    protected virtual void ManageMoveTimers()
+    {
+        if (hurt) return;
+        if (!playerDetected)
+        {
+            if (moving)
+            {
+                //Move for the duration. If finished, wait a bit
+                moveTimer -= Time.deltaTime;
+                if (moveTimer <= 0)
+                {
+                    moving = false;
+                    waitTimer = UnityEngine.Random.Range(minWaitTime, maxWaitTime);
+
+                }
+            }
+            else
+            {
+                //Wait for a set duration before continuing to move
+                waitTimer -= Time.deltaTime;
+                if (waitTimer <= 0)
+                {
+                    ChangeDirection();
+                }
+            }
+        }
+
+    }
+
+    //Called when changing direction during patrolling.
+    protected virtual void ChangeDirection()
+    {
+        //Change direction, and restart the move. Here, is just restarting the move timers.
+        moveTimer = UnityEngine.Random.Range(minPatrolTime, maxPatrolTime);
+        moving = true;
+    }
+
+    protected virtual void UpdateAnims()
+    {
+        spriteRenderer.flipX = !hurt ? moveDirection.x >= 0 : spriteRenderer.flipX; //Only update when the enemy is not hurt (shouldn't be flipping in the hurt animation)
+        anim.SetFloat("Speed", moving ? 1 : 0);
+        anim.SetBool("Hurt", hurt);
+    }
+
+    protected virtual void DetectPlayer()
+    {
+        //if (ignorePlayer) return;
+        //Detect distance to player (to stop chasing if player has gotten too far away)
+        if (!player || Vector2.Distance(player.position, transform.position) > maxDistanceToPlayer)
+        {
+            playerTooFar = true;
+        }
+        else
+        {
+            playerTooFar = false;
+        }
+    }
+
+    protected virtual void FixedUpdate()
+    {
+        if (hurt) return;
+        //Most enemies patrol, so run this
+        Patrol();
+    }
+
+
+    protected virtual void Patrol() { }
+
+
+    protected virtual void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Hitbox"))
+        {
+            GetHit();
+        }
+        if (collision.CompareTag("Gap") && !GameManager.cannotAct) //so if not already dead
+        {
+            StartCoroutine(AutomaticDeath());
+        }
+    }
+
+    IEnumerator AutomaticDeath()
+    {
+        yield return new WaitForSeconds(2);
+        Destroy(gameObject); //Die without triggering anything if fall off the stage
+    }
+
+    protected virtual void GetHit()
+    {
+        //Get hit, play the animation
+        health -= 1;
+        hurt = true;
+        hurtTimer = hurtTime;
+        hitFlash.Flash();
+        if (health <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            Hit?.Invoke();
+        }
+    }
+
+    void Die()
+    {
+        Death?.Invoke();
+        Instantiate(deathExplosionPrefab, transform.position, Quaternion.identity, null);
+        DropFood();
+        Destroy(gameObject);
+    }
+
+    void DropFood()
+    {
+        float random = (float)UnityEngine.Random.Range(1, 11) / 10;
+        if (random <= chanceForFoodDrop)
+        {
+            Instantiate(foodPrefab, transform.position, Quaternion.identity, null);
+        }
+    }
+}

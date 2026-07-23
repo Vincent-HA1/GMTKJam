@@ -164,7 +164,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        print(verticalVelocity);
         CheckForSurfaces();
         if (dead) return;
         // Update animator parameters
