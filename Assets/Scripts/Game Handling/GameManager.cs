@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,12 +17,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] PauseMenu pauseMenu;
     [SerializeField] Animator sceneFadeAnimator;
     [SerializeField] List<Checkpoint> checkpointList;
+    [SerializeField] GameObject collectiblesParent;
 
 
     public static bool cannotAct = false;
 
     bool respawning = false;
     Checkpoint currentCheckpoint;
+
+    //Player stats stuff
+    int fragmentAmount;
 
     private void Awake()
     {
@@ -31,8 +36,8 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if(hudManager)hudManager.InitialiseUI(); //fill with player stats health
         currentCheckpoint = checkpointList[0];
+        Time.timeScale = 1;
         BindEvents();
         SaveGame(); //save here
         StartCoroutine(WaitForSceneFade());
@@ -40,7 +45,9 @@ public class GameManager : MonoBehaviour
 
     void BindEvents()
     {
-        if (pauseMenu) pauseMenu.Quit += ReturnToTitle;
+        pauseMenu.Quit += ReturnToTitle;
+        pauseMenu.RetryStage += RetryLevel;
+
         //Player events
         player.Healed += UpdateHealth;
         player.Hit += UpdateHealth;
@@ -59,6 +66,25 @@ public class GameManager : MonoBehaviour
                 checkpoint.CheckpointReached += EndLevel;
             }
         }
+
+        //Collectibles
+
+        List<Collectible> allCollectibles = collectiblesParent.GetComponentsInChildren<Collectible>().ToList();
+        //Collectible events on pick up
+        foreach (Collectible collectible in allCollectibles)
+        {
+            switch (collectible.GetCollectibleType())
+            {
+                case Collectible.CollectibleType.Fragment:
+                    collectible.PickedUp += UpdateFragmentAmount;
+                    break;
+                case Collectible.CollectibleType.Puzzle:
+                    //BigCoin bigCoin = (BigCoin)collectible;
+                    //bigCoin.PickedUpBigCoin += FoundBigCoin;
+                    //bigCoins.Add(bigCoin);
+                    break;
+            }
+        }
     }
 
     IEnumerator WaitForSceneFade()
@@ -75,6 +101,22 @@ public class GameManager : MonoBehaviour
         //Update the UI for health
         hudManager.UpdateHealthAmount(health);
     }
+
+    void UpdateFragmentAmount()
+    {
+        fragmentAmount += 1;
+        hudManager.UpdateFragmentAmount(fragmentAmount);
+    }
+
+    //puzzle piece
+
+    //void FoundBigCoin(BigCoin bigCoinFound)
+    //{
+    //    int bigCoinIndex = bigCoins.IndexOf(bigCoinFound);
+    //    hudManager.UpdateBigCoinIndicator(bigCoinIndex);
+    //    currentStageSave.bigCoinsFound[bigCoinIndex] = 1; //set to found
+    //}
+
     void Respawn()
     {
         if (!respawning)
@@ -116,8 +158,6 @@ public class GameManager : MonoBehaviour
         cannotAct = true;
         //Player reached end of stage
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        print(currentSceneIndex);
-        print(SceneManager.sceneCountInBuildSettings - 1);
         if(currentSceneIndex >= SceneManager.sceneCountInBuildSettings - 1)
         {
             //WE'RE AT THE END OF THE GAME. DO SOMETHING
@@ -127,6 +167,7 @@ public class GameManager : MonoBehaviour
         else
         {
             player.ReachedEndOfLevel();
+            SaveGame();
             LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
     }
@@ -141,9 +182,9 @@ public class GameManager : MonoBehaviour
     void SaveGame()
     {
         //Create the instance of SaveData and save the game
-        SaveData data = new SaveData(optionsManager.GetOptions(), SceneManager.GetActiveScene().buildIndex);
+        SaveData data = new SaveData(optionsManager.GetOptions(), SceneManager.GetActiveScene().buildIndex, fragmentAmount);
         SaveSystem.Save(data);
-
+        print(fragmentAmount);
     }
 
     /* Load the save data and restore the game state */
@@ -154,8 +195,19 @@ public class GameManager : MonoBehaviour
         {
             //Restore saved options
             optionsManager.SetOptions(saveData != null ? saveData.options : new Options());
+            hudManager.InitialiseUI(3, saveData.fragments);
+            fragmentAmount = saveData.fragments;
+        }
+        else
+        {
+            hudManager.InitialiseUI();
         }
 
+    }
+
+    void RetryLevel()
+    {
+        LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     void ReturnToTitle()

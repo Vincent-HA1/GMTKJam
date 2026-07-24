@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
+    public Action RetryStage;
     public Action Quit;
 
     [Header("References")]
@@ -18,6 +19,7 @@ public class PauseMenu : MonoBehaviour
 
     [Header("Pause Menu References")]
     [SerializeField] Button resumeButton;
+    [SerializeField] Button restartButton;
     [SerializeField] Button optionsButton;
     [SerializeField] Button quitButton;
 
@@ -32,7 +34,7 @@ public class PauseMenu : MonoBehaviour
         resumeButton.onClick.AddListener(ClosePauseScreen);
         quitButton.onClick.AddListener(QuitGame);
         pauseMenu.SetActive(false);
-        //retryButton.onClick.AddListener(Retry);
+        restartButton.onClick.AddListener(Retry);
         //returnToStageButton.onClick.AddListener(QuitGame);
     }
 
@@ -60,7 +62,7 @@ public class PauseMenu : MonoBehaviour
         background.SetActive(true);
         EventSystem.current.SetSelectedGameObject(resumeButton.gameObject);
         paused = true;
-        //LevelManager.cannotAct = true;
+        GameManager.cannotAct = true;
     }
 
     void ClosePauseScreen()
@@ -69,14 +71,14 @@ public class PauseMenu : MonoBehaviour
         pauseMenu.SetActive(false);
         Time.timeScale = 1;
         paused = false;
-        //LevelManager.cannotAct = false;
+        GameManager.cannotAct = false;
         EventSystem.current.SetSelectedGameObject(null);
         inputs.ResetAllBools(); //Clear inputs on unpausing
     }
 
     void Retry()
     {
-        //RetryStage?.Invoke();
+        RetryStage?.Invoke();
     }
 
     void QuitGame()

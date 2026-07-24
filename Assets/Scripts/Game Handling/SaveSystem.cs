@@ -41,10 +41,11 @@ public class SaveData
 {
     public Options options;
     public int levelIndex;
-
-    public SaveData(Options options, int levelIndex)
+    public int fragments;
+    public SaveData(Options options, int levelIndex, int fragments)
     {
         this.options = options;
         this.levelIndex = levelIndex;
+        this.fragments = fragments;
     }
 }

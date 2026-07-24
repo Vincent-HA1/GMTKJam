@@ -37,8 +37,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform rightFootPoint;
     [SerializeField] Transform headPosition;
     [SerializeField] Vector2 footSize = new Vector2(0.25f, 0.12f);
-    [SerializeField] BoxCollider2D punchHitbox;
+    [SerializeField] BoxCollider2D attackHitbox;
     [SerializeField] BoxCollider2D kickHitbox;
+    [SerializeField] GameObject crouchHurtbox;
 
 
     [Header("Player Attributes")]
@@ -114,6 +115,7 @@ public class PlayerMovement : MonoBehaviour
     bool isJumping = false;
     bool storingJumpInput = false;
     bool stoppedHoldingJump = false;
+    bool crouching = false;
 
     //Gliding states
     bool gliding = false;
@@ -168,10 +170,10 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         CheckForSurfaces();
-        if (dead) return;
+        if (GameManager.cannotAct || dead) return;
         // Update animator parameters
         UpdateAnimations();
-        if (GameManager.cannotAct && !dead) return;
+        //if (GameManager.cannotAct && !dead) return;
         CheckHurtTimer();
         ManageHitboxDirection();
         CheckInvincibilityTimer();
@@ -181,6 +183,7 @@ public class PlayerMovement : MonoBehaviour
         UpdateCoyoteBuffer();
         UpdateJumpBuffer();
         CheckAttackBuffer();
+        CheckForCrouch();
         //CheckKickTimer();
         // Process movement input and potentially trigger jump
         ProcessMovementInput();
@@ -288,10 +291,9 @@ public class PlayerMovement : MonoBehaviour
 
     void ProcessMovementInput()
     {
-        if (attacking) return;
+        if (attacking || crouching) return;
         //if (kicking || attacking) return;
         movementInput = new Vector2(inputHandler.movement.x, 0f);
-
         // Handle jump action if in buffer and within coyote time
         if (storingJumpInput && (onGround || coyoteBuffer > 0f) && !isJumping)
         {
@@ -405,7 +407,7 @@ public class PlayerMovement : MonoBehaviour
     // Called from the animation event at the end of the attack animation
     public void AttackFinished()
     {
-        punchHitbox.enabled = false;
+        attackHitbox.enabled = false;
         attackFinished = true;
         attackBuffer = attackBufferWindow; //allow the window for the next attack
         //If an input has already come through (and is within the buffer), attack again
@@ -417,15 +419,36 @@ public class PlayerMovement : MonoBehaviour
 
     void ManageHitboxDirection()
     {
-        punchHitbox.transform.rotation = Quaternion.Euler(0, Mathf.Clamp(180 - anim.GetFloat("Horizontal") * 180, 0, 180), 0);
-        kickHitbox.transform.rotation = Quaternion.Euler(0, Mathf.Clamp(180 - anim.GetFloat("Horizontal") * 180, 0, 180), 0);
+        attackHitbox.transform.rotation = Quaternion.Euler(0, Mathf.Clamp(180 - anim.GetFloat("Horizontal") * 180, 0, 180), 0);
 
     }
 
     // Called from animation event
     public void EnableHitbox()
     {
-        punchHitbox.enabled = true;
+        attackHitbox.enabled = true;
+    }
+
+    // ----------------------------------------
+    // Crouching 
+    // ----------------------------------------
+
+    void CheckForCrouch()
+    {
+        //If holding down
+        if(inputHandler.movement.y < 0 && !isJumping && onGround)
+        {
+            crouching = true;
+            //change collider
+            boxCollider.enabled = false;
+            crouchHurtbox.SetActive(true);
+        }
+        else
+        {
+            crouching = false;
+            boxCollider.enabled = true;
+            crouchHurtbox.SetActive(false);
+        }
     }
 
     // ----------------------------------------
@@ -491,6 +514,8 @@ public class PlayerMovement : MonoBehaviour
         anim.SetFloat("Speed", Mathf.Abs(movementInput.x));
         if (movementInput.x != 0f)
             spriteRenderer.flipX = movementInput.x < 0f;
+
+        anim.SetBool("Crouching", crouching);
 
         // Jumping & falling states
         anim.SetBool("Jumping", isJumping && verticalVelocity > 0f);
@@ -659,6 +684,7 @@ public class PlayerMovement : MonoBehaviour
         isJumping = false;
         stoppedHoldingJump = false;
         gliding = false;
+        crouching = false;
         movementInput = Vector2.zero;
         if (resetVelocity) verticalVelocity = 0;
         attacking = false;
@@ -719,7 +745,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Decide on stats based on if in water or not (or attacking)
-        float moveSpeed = attacking ? 0 : groundMoveSpeed;
+        float moveSpeed = attacking || crouching ? 0 : groundMoveSpeed;
         float gravityValue = gravityForce;
         float maximumNegativeVelocity = (gliding ? glideNegativeVelocity : terminalNegativeVelocity);
 
@@ -806,7 +832,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Food"))
+        if (other.CompareTag("Health"))
         {
             Heal(1); //heal 1 for now
         }
@@ -822,7 +848,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Die();
         }
-        if ((collision.CompareTag("Enemy") || collision.CompareTag("PlayerObstacle")) && !hurt && !invincible)//invincibleTimer <= 0)
+        if (collision.CompareTag("Enemy") && !hurt && !invincible)//invincibleTimer <= 0)
         {
             //get hit
             GetHit();

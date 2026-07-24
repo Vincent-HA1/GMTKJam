@@ -9,7 +9,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] GameManager gameManager;
 
     [Header("UI References")]
-    [SerializeField] TextMeshProUGUI coinAmountText;
+    [SerializeField] TextMeshProUGUI fragmentAmountText;
     [SerializeField] Transform heartsParent;
     //[SerializeField] Transform bigCoinsParent;
     [SerializeField] GameObject heartPrefab;
@@ -20,7 +20,7 @@ public class HUDManager : MonoBehaviour
     //List<BigCoinIndicator> bigCoins = new List<BigCoinIndicator>();
 
     //Run from the level manager. Fills the UI
-    public void InitialiseUI(float playerMaxHealth = 3, float startingCoins = 0)
+    public void InitialiseUI(float playerMaxHealth = 3, float startingFragments = 0)
     {
         //Inintiailsie the hearts
         for (int i = 0; i < playerMaxHealth; i++)
@@ -39,7 +39,7 @@ public class HUDManager : MonoBehaviour
         //        bigCoin.SetFound();
         //    }
         //}
-        //UpdateCoinAmount(startingCoins);
+        UpdateFragmentAmount(startingFragments);
     }
 
 
@@ -65,14 +65,17 @@ public class HUDManager : MonoBehaviour
     //    bigCoins[index].SetFound();
     //}
 
-    //public void UpdateCoinAmount(float coinAmount)
-    //{
-    //    string coinAmountString = coinAmount.ToString();
-    //    string finalString = "";
-    //    for (int i = 0; i < coinAmountString.Length; i++)
-    //    {
-    //        finalString += $"<sprite index={coinAmountString[i]}>";
-    //    }
-    //    coinAmountText.text = finalString;
-    //}
+    public void UpdateFragmentAmount(float fragmentAmount)
+    {
+        string fragmentAmountString = fragmentAmount.ToString();
+        string finalString = "";
+        for (int i = 0; i < fragmentAmountString.Length; i++)
+        {
+            /*
+            finalString += $"<sprite index={fragmentAmountString[i]}>";
+            */
+            finalString += $"{ fragmentAmountString[i]}";
+        }
+        fragmentAmountText.text = finalString;
+    }
 }

@@ -46,7 +46,7 @@ public class BaseEnemy : MonoBehaviour
 
     private float hurtTimer;
     private float health;
-    private SpriteRenderer spriteRenderer;
+    protected SpriteRenderer spriteRenderer;
     private EnemyHitFlash hitFlash;
     // Start is called before the first frame update
     protected virtual void Start()
