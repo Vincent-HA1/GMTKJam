@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HUDManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] Transform heartsParent;
     //[SerializeField] Transform bigCoinsParent;
     [SerializeField] GameObject heartPrefab;
+    [SerializeField] Slider cooldownSlider;
     //[SerializeField] GameObject bigCoinIndicatorPrefab;
 
 
@@ -77,5 +79,10 @@ public class HUDManager : MonoBehaviour
             finalString += $"{ fragmentAmountString[i]}";
         }
         fragmentAmountText.text = finalString;
+    }
+
+    public void UpdateCooldown(float cooldown)
+    {
+        cooldownSlider.value = cooldownSlider.maxValue - cooldown;
     }
 }

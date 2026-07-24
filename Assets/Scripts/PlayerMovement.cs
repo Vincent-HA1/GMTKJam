@@ -8,13 +8,9 @@ public class PlayerMovement : MonoBehaviour
     public Action<float> Hit;
     public Action Death;
     public Action Jump;
-    public Action OpenParachute;
-    public Action Bounce;
     public Action PunchAction;
-    public Action KickAction;
+    public Action<float> CooldownChanged;
     public LayerMask groundLayer;
-    public LayerMask waterLayer;
-    public LayerMask iceLayer;
 
     public float MaxHealth
     {
@@ -36,10 +32,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform leftFootPoint;
     [SerializeField] Transform rightFootPoint;
     [SerializeField] Transform headPosition;
+    [SerializeField] Transform bombThrowPos;
     [SerializeField] Vector2 footSize = new Vector2(0.25f, 0.12f);
     [SerializeField] BoxCollider2D attackHitbox;
-    [SerializeField] BoxCollider2D kickHitbox;
     [SerializeField] GameObject crouchHurtbox;
+    [SerializeField] GameObject bomb;
 
 
     [Header("Player Attributes")]
@@ -57,13 +54,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float maxVerticalVelocity = 15;
     [SerializeField] float jumpBufferTime = 0.15f;
     [SerializeField] float coyoteTime = 0.08f;
-    [SerializeField] float glideNegativeVelocity = -20;
     [SerializeField] AnimationCurve airAccelCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [SerializeField] bool useAccel = true; // toggle for air acceleration
 
     [Header("Player Attack Attributes")]
     [SerializeField] float attackBufferWindow = 0.2f;
     [SerializeField] float attackInputBufferWindow = 0.15f;
+
+    [Header("Player Special Attack Attributes")]
+    [SerializeField] float cooldownTime = 5;
 
 
     [Header("Player Hurt Attributes")]
@@ -84,7 +83,6 @@ public class PlayerMovement : MonoBehaviour
     Vector2 movementInput;
     float xMovement;
     float currentHorizontalDir;
-    Vector2 glideCheckSize;
     Vector2 platformDelta;
 
     // Velocity state
@@ -98,9 +96,7 @@ public class PlayerMovement : MonoBehaviour
     // Attack buffers
     float attackBuffer = 0;
     float attackInputBuffer = 0;
-
-    // Kicking buffers
-    float kickTimer = 0;
+    float cooldown = 0;
 
     //Hurt Timers
     float hurtTimer = 0;
@@ -116,10 +112,8 @@ public class PlayerMovement : MonoBehaviour
     bool storingJumpInput = false;
     bool stoppedHoldingJump = false;
     bool crouching = false;
+    bool throwingBomb = false;
 
-    //Gliding states
-    bool gliding = false;
-    bool canGlide = false;
 
     // Attacking states
     bool attacking = false;
@@ -161,7 +155,6 @@ public class PlayerMovement : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         inputHandler = GetComponent<InputHandler>();
         boxCollider = GetComponent<BoxCollider2D>();
-        glideCheckSize = footSize + new Vector2(0, 1f);
         spriteRenderer.color = Color.white;
         health = maxHealth;
         anim.SetFloat("Horizontal", 1); //start by facing right
@@ -184,6 +177,7 @@ public class PlayerMovement : MonoBehaviour
         UpdateJumpBuffer();
         CheckAttackBuffer();
         CheckForCrouch();
+        CheckForBombThrow();
         //CheckKickTimer();
         // Process movement input and potentially trigger jump
         ProcessMovementInput();
@@ -213,26 +207,19 @@ public class PlayerMovement : MonoBehaviour
         //Vector3 offset = platformToFollow == null ? Vector2.zero : new Vector2(0, -0.1f);
         //bool left = Physics2D.OverlapBox(leftFootPoint.position + offset, footSize, 0, groundLayer);
         //bool right = Physics2D.OverlapBox(rightFootPoint.position + offset, footSize, 0, groundLayer);
-        bool leftGlideCheck = Physics2D.OverlapBox((Vector2)leftFootPoint.position - new Vector2(0, 0.3f), glideCheckSize, 0, groundLayer);
-        bool rightGlideCheck = Physics2D.OverlapBox((Vector2)rightFootPoint.position - new Vector2(0, 0.3f), glideCheckSize, 0, groundLayer);
         onGround = CheckForSpecificGroundLayer(groundLayer, footSize);
         //test
         //ignoreOnGround = platformToFollow != null;
         //onGround = ignoreOnGround ? true : onGround;
-        canGlide = !(leftGlideCheck || rightGlideCheck);
         if (onGround)
         {
             canActivateCoyote = true;
             stoppedHoldingJump = false;
-            gliding = false;
             if (verticalVelocity <= 0)
             {
                 additiveForce = Vector2.zero;
             }
         }
-
-        //Check for water surface
-        RaycastHit2D hit = Physics2D.Raycast(headPosition.position, Vector2.up, 0.1f, waterLayer);
     }
 
     bool CheckForSpecificGroundLayer(LayerMask layerToCheck, Vector2 boxSize)
@@ -291,7 +278,7 @@ public class PlayerMovement : MonoBehaviour
 
     void ProcessMovementInput()
     {
-        if (attacking || crouching) return;
+        if (attacking || crouching || throwingBomb) return;
         //if (kicking || attacking) return;
         movementInput = new Vector2(inputHandler.movement.x, 0f);
         // Handle jump action if in buffer and within coyote time
@@ -310,26 +297,6 @@ public class PlayerMovement : MonoBehaviour
             isJumping = false;
         }
 
-        //So if let go once, and now holding again, gliding can be activated as long as the player is not on the ground
-        if (stoppedHoldingJump || (!isJumping && !onGround))//isJumping && stoppedHoldingJump)
-        {
-            ////Can only glide when falling (to prevent weird rising glide shennanigans)
-            //if (!gliding && canGlide && verticalVelocity <= 0)
-            //{
-            //    gliding = inputHandler.jumpHeld && !onGround;
-            //    if (gliding) OpenParachute?.Invoke();
-            //}
-            //else if (gliding)
-            //{
-            //    //gliding = inputHandler.jumpHeld && !onGround;
-            //}
-            //if (gliding)
-            //{
-            //    gliding = inputHandler.jumpHeld && !onGround;
-            //    storingJumpInput = false;
-            //}
-        }
-
 
         // On ground or input zero, snap horizontal direction to input
         if (onGround || movementInput.x == 0f)
@@ -343,8 +310,6 @@ public class PlayerMovement : MonoBehaviour
         verticalVelocity = jumpForce;
         isJumping = true;
         storingJumpInput = false;
-        //make sure gliding has stopped
-        gliding = false;
 
         //Get out of any child things, e.g. moving platforms
         //ExitPlatform();
@@ -385,7 +350,7 @@ public class PlayerMovement : MonoBehaviour
     void CheckAttackBuffer()
     {
         // If on the ground, it is possible to attack. The is jumping check is to ensure that the player isn't holidng space (whihc is why they wouldnt be able to jump)
-        if (inputHandler.attackPressed && onGround && (!isJumping || inputHandler.jumpHeld))
+        if (inputHandler.attackPressed && onGround && (!isJumping || inputHandler.jumpHeld) && !crouching && !throwingBomb)
         {
             Attack();
         }
@@ -452,55 +417,40 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // ----------------------------------------
-    // Kicking 
+    // Special Attack 
     // ----------------------------------------
 
-    //void Kick()
-    //{
-    //    if (!kicking)
-    //    {
-    //        KickAction?.Invoke();
-    //        kicking = true;
-    //        kickTimer = kickLength;
-    //        canKick = false; //can only kick once in the air, have to wait to land again
-    //        kickHitbox.enabled = true;
-    //        horizontalVelocity = kickInitialSpeed * anim.GetFloat("Horizontal");
-    //        additiveForce = Vector2.zero;//cancel all forces
-    //        //ExitPlatform();
-    //    }
-    //}
+    
+    void CheckForBombThrow()
+    {
+        cooldown -= Time.deltaTime;
+        CooldownChanged?.Invoke(cooldown);
+        bool canThrowBomb = (onGround && (!inputHandler.jumpHeld || storingJumpInput) && verticalVelocity <= 0f);
+        if (cooldown <= 0 && inputHandler.specialPressed && canThrowBomb)
+        {
+            //Throw the bomb
+            StartBombThrow();
+        }
+    }
 
-    //void CheckKickTimer()
-    //{
-    //    if (inputHandler.specialPressed && !kicking && !attacking && canKick)
-    //    {
-    //        Kick();
-    //    }
+    void StartBombThrow()
+    {
+        throwingBomb = true;
+        attacking = true;
+        cooldown = cooldownTime; //set later
+    }
 
-    //    kickTimer -= Time.deltaTime;
-    //    if (kickTimer <= 0)
-    //    {
-    //        if (!kicking && !canKick)
-    //        {
-    //            //If the delay has passed, allow kicking agian
-    //            canKick = (onGround && (!inputHandler.jumpHeld || storingJumpInput) && verticalVelocity <= 0f) || inWater;//true;
-    //            if (canKick) ShowFlash();
-    //        }
-    //        else if (kicking)
-    //        {
-    //            StopKick();
-    //        }
-    //    }
-    //}
+    public void ThrowBomb()
+    {
+        GameObject b = Instantiate(bomb, null);
+        b.GetComponent<Bomb>().SetDirection(anim.GetFloat("Horizontal"), bombThrowPos.position);
+    }
 
-    //void StopKick()
-    //{
-    //    //If kicking, stop kicking, and set up the kick lag (i.e. time before being allowed to kick again)
-    //    kickTimer = inWater ? swimKickLag : onGround ? groundKickLag : 0;
-    //    kicking = false;
-    //    canKick = false;
-    //    kickHitbox.enabled = false;
-    //}
+    public void EndBombThrow()
+    {
+        throwingBomb = false;
+        attacking = false;
+    }
 
     // ----------------------------------------
     // Animation Updates
@@ -521,15 +471,12 @@ public class PlayerMovement : MonoBehaviour
         anim.SetBool("Jumping", isJumping && verticalVelocity > 0f);
         anim.SetBool("Falling", verticalVelocity < 0f && !onGround);
 
-        // Attacking and kicking states
+        // Attacking states
         anim.SetBool("Attacking", attacking);
-        //anim.SetBool("Kicking", kicking);
+        anim.SetBool("ThrowingBomb", throwingBomb);
         anim.SetBool("Hurt", hurt);
         anim.SetBool("Dead", dead);
-        anim.SetBool("Gliding", gliding);
 
-        //Swimming
-        //anim.SetBool("Swimming", inWater);
     }
 
     // ----------------------------------------
@@ -564,35 +511,6 @@ public class PlayerMovement : MonoBehaviour
             invincibilityTimer -= Time.deltaTime;
         }
     }
-
-    // ----------------------------------------
-    // Swimming
-    // ----------------------------------------
-
-    //void StartSwimming()
-    //{
-    //    //set all states to false when in water
-    //    inWater = true;
-    //    verticalVelocity = verticalVelocity /= 2;
-    //    //if(verticalVelocity > 0) verticalVelocity /= 2; //halve velocity
-    //    ResetStates(false);
-    //    //kickTimer = 0; //Don't make the kick timer delay upon hitting the water
-    //}
-
-    //void GetOutOfWater()
-    //{
-    //    inWater = false;
-    //    //Only if going up, then jump out of water
-    //    if (verticalVelocity > 0 && !waterAbove)
-    //    {
-    //        PerformJump(true, false); //jump out
-    //    }
-    //    //So if got out of the water, reduce the kick lag again
-    //    if (!canKick)
-    //    {
-    //        kickTimer -= (swimKickLag - groundKickLag);
-    //    }
-    //}
 
     // ----------------------------------------
     // Platform Logic
@@ -680,10 +598,8 @@ public class PlayerMovement : MonoBehaviour
 
     void ResetStates(bool resetVelocity = true)
     {
-        gliding = false;
         isJumping = false;
         stoppedHoldingJump = false;
-        gliding = false;
         crouching = false;
         movementInput = Vector2.zero;
         if (resetVelocity) verticalVelocity = 0;
@@ -745,9 +661,9 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Decide on stats based on if in water or not (or attacking)
-        float moveSpeed = attacking || crouching ? 0 : groundMoveSpeed;
+        float moveSpeed = attacking || crouching || throwingBomb ? 0 : groundMoveSpeed;
         float gravityValue = gravityForce;
-        float maximumNegativeVelocity = (gliding ? glideNegativeVelocity : terminalNegativeVelocity);
+        float maximumNegativeVelocity = terminalNegativeVelocity;
 
         // Horizontal velocity is directly from xMovement (unless on ice). If kicking, then move forwards according to the kick speed
         //horizontalVelocity = !kicking ? moveSpeed * xMovement : horizontalVelocity;
@@ -819,7 +735,6 @@ public class PlayerMovement : MonoBehaviour
         health = maxHealth;
         hurt = false;
         ResetStates();
-        //inWater = false;
         boxCollider.enabled = true;
         hurtTimer = 0;
         dead = false;
@@ -840,10 +755,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        //if (collision.CompareTag("Water") && !(!waterAbove && verticalVelocity > 0) && canGlide && !inWater) //So if we are in water (and it is not shallow by using canGlide), and not currently jumping out of it, then start swimming
-        //{
-        //    StartSwimming();
-        //}
         if (collision.CompareTag("Gap") && !GameManager.cannotAct) //so if not already dead
         {
             Die();
@@ -872,33 +783,6 @@ public class PlayerMovement : MonoBehaviour
         //}
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        //if (collision.gameObject.CompareTag("Spring"))
-        //{
-        //    Bounce?.Invoke();
-        //    //if kicking, cancel it
-        //    if (kicking) StopKick();
-        //    float temp = jumpForce;
-        //    jumpForce *= 2;
-        //    PerformJump(true, false);
-        //    jumpForce = temp;
-        //    stoppedHoldingJump = false;
-        //}
-        //if (collision.gameObject.CompareTag("SuperSpring"))
-        //{
-        //    Bounce?.Invoke();
-        //    //if kicking, cancel it
-        //    if (kicking) StopKick();
-        //    float temp = jumpForce;
-        //    jumpForce *= 3;
-        //    PerformJump(true, false);
-        //    jumpForce = temp;
-        //    additiveForce = new Vector2(currentHorizontalDir, 0) * springXModifier; //Add this onto the player's movement as a result of touching this spring
-        //    additiveForcePercentage = 1;
-        //    stoppedHoldingJump = false;
-        //}
-    }
     private void OnCollisionStay2D(Collision2D collision)
     {
         //CHECK FOR COLLISIONS WITH SOLID SURFACES

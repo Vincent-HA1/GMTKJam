@@ -161,7 +161,9 @@ public class BaseEnemy : MonoBehaviour
     {
         if (collision.CompareTag("Hitbox"))
         {
-            GetHit();
+            //Retrieve the damage
+            float damage = collision.GetComponentInParent<Damage>().GetDamage();
+            GetHit(damage);
         }
         if (collision.CompareTag("Gap") && !GameManager.cannotAct) //so if not already dead
         {
@@ -175,10 +177,10 @@ public class BaseEnemy : MonoBehaviour
         Destroy(gameObject); //Die without triggering anything if fall off the stage
     }
 
-    protected virtual void GetHit()
+    protected virtual void GetHit(float damage = 1)
     {
         //Get hit, play the animation
-        health -= 1;
+        health -= damage;
         hurt = true;
         hurtTimer = hurtTime;
         hitFlash.Flash();

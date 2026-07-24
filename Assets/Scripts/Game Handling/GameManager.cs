@@ -52,6 +52,7 @@ public class GameManager : MonoBehaviour
         player.Healed += UpdateHealth;
         player.Hit += UpdateHealth;
         player.Death += Respawn;
+        player.CooldownChanged += hudManager.UpdateCooldown;
 
         //Checkpoints
         foreach (Checkpoint checkpoint in checkpointList)

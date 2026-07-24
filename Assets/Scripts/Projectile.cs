@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyProjectile : MonoBehaviour
+public class Projectile : MonoBehaviour
 {
 
     [Header("Attributes")]
     [SerializeField] float moveSpeed = 6;
+
     [SerializeField] Rigidbody2D rigid;
     [SerializeField] SpriteRenderer spriteRenderer;
-
     Vector2 moveDir;
 
     bool destroying = false;
@@ -24,7 +24,7 @@ public class EnemyProjectile : MonoBehaviour
     public void SetFlight(Vector2 direction, Vector2 startPos)
     {
         moveDir = direction;
-        transform.position = startPos;  
+        transform.position = startPos;
         spriteRenderer.enabled = true;
     }
 
@@ -35,20 +35,20 @@ public class EnemyProjectile : MonoBehaviour
 
 
 
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-    //    if (collision.CompareTag("Player") && !destroying)
-    //    {
-    //        destroying = true;
-    //        StartCoroutine(DestroyAfterDelay());
-    //    }
-    //}
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Enemy") && !destroying)
+        {
+            destroying = true;
+            StartCoroutine(DestroyAfterDelay());
+        }
+    }
 
-    //IEnumerator DestroyAfterDelay()
-    //{
-    //    yield return new WaitForSeconds(0.1f);
-    //    //Destroy(gameObject);
-    //}
+    IEnumerator DestroyAfterDelay()
+    {
+        yield return new WaitForSeconds(0.1f);
+        Destroy(gameObject);
+    }
 
     private void OnBecameInvisible()
     {

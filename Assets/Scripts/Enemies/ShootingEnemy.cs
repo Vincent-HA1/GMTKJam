@@ -77,9 +77,9 @@ public class ShootingEnemy : BaseEnemy
         shootTimer = UnityEngine.Random.Range(minShootTime, maxShootTime);
     }
 
-    protected override void GetHit()
+    protected override void GetHit(float damage = 1)
     {
-        base.GetHit();
+        base.GetHit(damage);
         RestartTimer(); //restart shooting on hit
     }
 }

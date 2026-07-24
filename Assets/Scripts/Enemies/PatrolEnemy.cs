@@ -175,9 +175,9 @@ public class PatrolEnemy : BaseEnemy
         rigid.MovePosition(rigid.position + finalMovement);
     }
 
-    protected override void GetHit()
+    protected override void GetHit(float damage = 1)
     {
-        base.GetHit();
+        base.GetHit(damage);
         moveDirBeforeGettingHit = moveDirection;
         moveDirection = Vector2.zero;
     }
