@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -37,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] BoxCollider2D attackHitbox;
     [SerializeField] GameObject crouchHurtbox;
     [SerializeField] GameObject bomb;
+    [SerializeField] Companion bepo;
 
 
     [Header("Player Attributes")]
@@ -126,6 +128,33 @@ public class PlayerMovement : MonoBehaviour
 
     bool blockHorizontalMovement = false;
     float health;
+
+    PlayerUpgrades upgradesUnlocked;
+    public void SetPlayerUpgrades(PlayerUpgrades playerUpgrades)
+    {
+        upgradesUnlocked = playerUpgrades;
+        if(upgradesUnlocked.bepoUnlocked) bepo.SetAttackUnlocked();
+    }
+
+    public void ApplyStatUpgrades(PlayerStats stats)
+    {
+        //Jump, speed, range and health
+        jumpForce *= stats.jumpMult;
+        groundMoveSpeed *= stats.speedMult;
+        maxHealth += stats.healthAdd;
+        health = maxHealth;
+
+        //Edit hitbox
+        Vector2 newSize = attackHitbox.size;
+        float changeInSize = newSize.x * stats.rangeMult - newSize.x;
+        newSize.x *= stats.rangeMult;
+        attackHitbox.size = newSize;
+
+        // 2. Shift center right by half the extension amount
+        Vector2 newOffset = attackHitbox.offset;
+        newOffset.x += changeInSize / 2f;
+        attackHitbox.offset = newOffset;
+    }
 
     public void ReachedEndOfLevel()
     {
@@ -423,6 +452,8 @@ public class PlayerMovement : MonoBehaviour
     
     void CheckForBombThrow()
     {
+        //Has to be unlocked
+        if (!upgradesUnlocked.specialUnlocked) return;
         cooldown -= Time.deltaTime;
         CooldownChanged?.Invoke(cooldown);
         bool canThrowBomb = (onGround && (!inputHandler.jumpHeld || storingJumpInput) && verticalVelocity <= 0f);

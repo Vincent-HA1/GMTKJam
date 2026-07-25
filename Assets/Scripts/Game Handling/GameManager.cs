@@ -27,6 +27,8 @@ public class GameManager : MonoBehaviour
 
     //Player stats stuff
     int fragmentAmount;
+    PlayerUpgrades currentPlayerUpgrades;
+    PlayerStats currentPlayerStats;
 
     private void Awake()
     {
@@ -105,7 +107,7 @@ public class GameManager : MonoBehaviour
 
     void UpdateFragmentAmount()
     {
-        fragmentAmount += 1;
+        fragmentAmount += 10;
         hudManager.UpdateFragmentAmount(fragmentAmount);
     }
 
@@ -159,7 +161,8 @@ public class GameManager : MonoBehaviour
         cannotAct = true;
         //Player reached end of stage
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        if(currentSceneIndex >= SceneManager.sceneCountInBuildSettings - 1)
+        //Last scene is shop, so check if scene before that
+        if(currentSceneIndex >= SceneManager.sceneCountInBuildSettings - 2)
         {
             //WE'RE AT THE END OF THE GAME. DO SOMETHING
             //For now, return to title
@@ -169,7 +172,7 @@ public class GameManager : MonoBehaviour
         {
             player.ReachedEndOfLevel();
             SaveGame();
-            LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            LoadScene("Shop"); //go to shop
         }
     }
 
@@ -183,9 +186,8 @@ public class GameManager : MonoBehaviour
     void SaveGame()
     {
         //Create the instance of SaveData and save the game
-        SaveData data = new SaveData(optionsManager.GetOptions(), SceneManager.GetActiveScene().buildIndex, fragmentAmount);
+        SaveData data = new SaveData(optionsManager.GetOptions(), SceneManager.GetActiveScene().buildIndex, fragmentAmount, currentPlayerUpgrades, currentPlayerStats);
         SaveSystem.Save(data);
-        print(fragmentAmount);
     }
 
     /* Load the save data and restore the game state */
@@ -194,40 +196,48 @@ public class GameManager : MonoBehaviour
         SaveData saveData = SaveSystem.Load();
         if (saveData != null)
         {
+            fragmentAmount = saveData.fragments;
+            currentPlayerUpgrades = saveData.upgrades;
+            currentPlayerStats = saveData.stats;
             //Restore saved options
             optionsManager.SetOptions(saveData != null ? saveData.options : new Options());
-            hudManager.InitialiseUI(3, saveData.fragments);
-            fragmentAmount = saveData.fragments;
+            hudManager.InitialiseUI(3 + currentPlayerStats.healthAdd, fragmentAmount, currentPlayerUpgrades.specialUnlocked);
         }
         else
         {
+            //No Save, initialise everyting
             hudManager.InitialiseUI();
+            currentPlayerUpgrades = new PlayerUpgrades();
+            currentPlayerStats = new PlayerStats();
         }
+        //Set player stuff
+        player.SetPlayerUpgrades(currentPlayerUpgrades);
+        player.ApplyStatUpgrades(currentPlayerStats);
 
     }
 
     void RetryLevel()
     {
-        LoadScene(SceneManager.GetActiveScene().buildIndex);
+        LoadScene(SceneManager.GetActiveScene().name);
     }
 
     void ReturnToTitle()
     {
-        LoadScene(0);
+        LoadScene("TitleScreen");
     }
 
-    void LoadScene(int sceneIndex)
+    void LoadScene(string sceneName)
     {
-        StartCoroutine(LoadSceneAfterFade(sceneIndex));
+        StartCoroutine(LoadSceneAfterFade(sceneName));
         EventSystem.current.enabled = false;
     }
 
-    IEnumerator LoadSceneAfterFade(int sceneIndex)
+    IEnumerator LoadSceneAfterFade(string sceneName)
     {
         sceneFadeAnimator.SetTrigger("FadeOut");
         yield return new WaitForEndOfFrame();
         yield return new WaitUntil(() => sceneFadeAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
-        SceneManager.LoadScene(sceneIndex); 
+        SceneManager.LoadScene(sceneName); 
     }
 
     private void OnApplicationQuit()

@@ -76,6 +76,8 @@ public class TitleScreen : MonoBehaviour
         }
         else
         {
+            //Delete save
+            SaveSystem.DeleteSave();
             LoadScene(SceneManager.GetActiveScene().buildIndex + 1); // load next scene
         }
     }

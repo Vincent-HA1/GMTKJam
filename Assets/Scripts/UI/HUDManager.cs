@@ -22,7 +22,7 @@ public class HUDManager : MonoBehaviour
     //List<BigCoinIndicator> bigCoins = new List<BigCoinIndicator>();
 
     //Run from the level manager. Fills the UI
-    public void InitialiseUI(float playerMaxHealth = 3, float startingFragments = 0)
+    public void InitialiseUI(float playerMaxHealth = 3, float startingFragments = 0, bool specialUnlocked = false)
     {
         //Inintiailsie the hearts
         for (int i = 0; i < playerMaxHealth; i++)
@@ -42,6 +42,7 @@ public class HUDManager : MonoBehaviour
         //    }
         //}
         UpdateFragmentAmount(startingFragments);
+        cooldownSlider.gameObject.SetActive(specialUnlocked);
     }
 
 

@@ -9,7 +9,8 @@ public class Companion : MonoBehaviour
 
     [Header("Follow Settings")]
     [SerializeField] private float followSpeed = 5f;
-    [SerializeField] private bool attackUnlocked = false; //bool here for now
+    
+     
 
     [Header("Shooting Settings")]
     [SerializeField] LayerMask enemyLayer;
@@ -22,12 +23,18 @@ public class Companion : MonoBehaviour
     private Vector3 initialOffset;
     private Vector3 currentVelocity = Vector3.zero;
     private bool isFacingRight = true;
+    private bool attackUnlocked = false;
 
     SpriteRenderer spriteRenderer;
 
     //Attacking
     float shootTimer = 0;
     GameObject currentEnemyTarget;
+
+    public void SetAttackUnlocked()
+    {
+        attackUnlocked = true;
+    }
 
     void Start()
     {
