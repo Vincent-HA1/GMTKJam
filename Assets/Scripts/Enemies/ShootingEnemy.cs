@@ -82,9 +82,19 @@ public class ShootingEnemy : BaseEnemy
 
     void Shoot()
     {
+        anim.SetBool("Shooting", true);
+    }
+
+    public void ShootProjectile()
+    {
         RestartTimer();
         GameObject projectile = Instantiate(enemyProjectile, transform);
         projectile.GetComponent<EnemyProjectile>().SetFlight(directionToFace, shootPos.position);
+    }
+
+    public void ThrowEnd()
+    {
+        anim.SetBool("Shooting", false);
     }
 
     void RestartTimer()
@@ -95,6 +105,7 @@ public class ShootingEnemy : BaseEnemy
     protected override void GetHit(float damage = 1)
     {
         base.GetHit(damage);
+        anim.SetBool("Shooting", false);
         RestartTimer(); //restart shooting on hit
     }
 }
