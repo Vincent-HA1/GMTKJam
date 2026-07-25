@@ -123,6 +123,7 @@ public class PatrolEnemy : BaseEnemy
         {
             if (moving && !CanMove())
             {
+                print("run into something");
                 //If run into something, change direction
                 moveTimer = 0;
             }
@@ -152,6 +153,9 @@ public class PatrolEnemy : BaseEnemy
 
     protected virtual bool CanMove()
     {
+        print(onGround);
+        print(wallThere);
+        print(hitOtherEnemy);
         //Returns the conditions for not being able to move
         return onGround && !wallThere && !hitOtherEnemy;
     }

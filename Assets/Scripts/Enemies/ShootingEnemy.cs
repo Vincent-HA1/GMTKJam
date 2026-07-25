@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 //No patrolling, just shoots when it detects the enemy
 public class ShootingEnemy : BaseEnemy
@@ -18,15 +19,29 @@ public class ShootingEnemy : BaseEnemy
 
     float shootTimer;
 
+    bool setDirection = false;
+    Vector2 storedDirection;
+
     protected override void Start()
     {
         base.Start();
         moveDirection = directionToFace; //Fixed
     }
 
+    public void SetDirectionToFace(Vector2 direction)
+    {
+        moveDirection = direction;
+        storedDirection = direction;
+        setDirection = true;
+    }
+
     protected override void Update()
     {
         base.Update();
+        if (setDirection)
+        {
+            moveDirection = storedDirection;
+        }
         ManageShootDirection();
         ManageShootTimers();
     }
@@ -68,7 +83,7 @@ public class ShootingEnemy : BaseEnemy
     void Shoot()
     {
         RestartTimer();
-        GameObject projectile = Instantiate(enemyProjectile);
+        GameObject projectile = Instantiate(enemyProjectile, transform);
         projectile.GetComponent<EnemyProjectile>().SetFlight(directionToFace, shootPos.position);
     }
 

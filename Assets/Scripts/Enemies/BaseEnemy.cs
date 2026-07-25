@@ -194,7 +194,7 @@ public class BaseEnemy : MonoBehaviour
         }
     }
 
-    void Die()
+    protected virtual void Die()
     {
         Death?.Invoke();
         Instantiate(deathExplosionPrefab, transform.position, Quaternion.identity, null);

@@ -28,7 +28,7 @@ public class EnemyHitFlash : MonoBehaviour
         {
             StopCoroutine(flashCoroutine);
         }
-
+        spriteRenderer.color = originalColor; //always set colour at the start
         flashCoroutine = StartCoroutine(FlashRoutine());
     }
 

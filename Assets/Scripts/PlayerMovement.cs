@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
 {
     public Action<float> Healed;
     public Action<float> Hit;
+    public Action Respawned;
     public Action Death;
     public Action Jump;
     public Action PunchAction;
@@ -192,6 +193,12 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         CheckForSurfaces();
+        if (GameManager.cannotAct)
+        {
+            anim.SetFloat("Speed", 0);
+            anim.SetBool("Attacking", false);
+            attacking = false;
+        }
         if (GameManager.cannotAct || dead) return;
         // Update animator parameters
         UpdateAnimations();
@@ -769,6 +776,7 @@ public class PlayerMovement : MonoBehaviour
         boxCollider.enabled = true;
         hurtTimer = 0;
         dead = false;
+        Respawned?.Invoke();
     }
 
     void Heal(float healAmount)

@@ -54,6 +54,7 @@ public class Companion : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.cannotAct) return;
         AttackEnemies();
     }
 
@@ -74,7 +75,6 @@ public class Companion : MonoBehaviour
         ResetShootTimer();
         GameObject p = Instantiate(projectile);
         Vector2 directionToFace = (currentEnemyTarget.transform.position - transform.position).normalized;
-        print(p.GetComponent<Projectile>());
         p.GetComponent<Projectile>().SetFlight(directionToFace, shootPos.position);
     }
 

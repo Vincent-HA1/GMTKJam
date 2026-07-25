@@ -14,9 +14,11 @@ public class GameManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] PlayerMovement player;
+    [SerializeField] FlyingBossEnemy boss;
     [SerializeField] PauseMenu pauseMenu;
     [SerializeField] Animator sceneFadeAnimator;
     [SerializeField] List<Checkpoint> checkpointList;
+    [SerializeField] List<SimpleCutscene> cutsceneList;
     [SerializeField] GameObject collectiblesParent;
 
 
@@ -30,6 +32,7 @@ public class GameManager : MonoBehaviour
     PlayerUpgrades currentPlayerUpgrades;
     PlayerStats currentPlayerStats;
 
+    private bool finalStage = false;
     private void Awake()
     {
         LoadGame();
@@ -39,6 +42,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         currentCheckpoint = checkpointList[0];
+        player.Respawn(currentCheckpoint.GetPosition());
         Time.timeScale = 1;
         BindEvents();
         SaveGame(); //save here
@@ -55,6 +59,9 @@ public class GameManager : MonoBehaviour
         player.Hit += UpdateHealth;
         player.Death += Respawn;
         player.CooldownChanged += hudManager.UpdateCooldown;
+
+        //Boss
+        if (boss != null) boss.Death += IsFinalStage;
 
         //Checkpoints
         foreach (Checkpoint checkpoint in checkpointList)
@@ -88,6 +95,12 @@ public class GameManager : MonoBehaviour
                     break;
             }
         }
+
+        //Cutscenes
+        foreach(SimpleCutscene cutscene in cutsceneList)
+        {
+            player.Respawned += cutscene.ResetCutscene;
+        }
     }
 
     IEnumerator WaitForSceneFade()
@@ -97,6 +110,11 @@ public class GameManager : MonoBehaviour
         //if (movingSpikes) movingSpikes.SetPosition();
         yield return new WaitUntil(() => sceneFadeAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
         cannotAct = false;
+    }
+
+    void IsFinalStage()
+    {
+        finalStage = true;
     }
 
     void UpdateHealth(float health)
@@ -161,8 +179,8 @@ public class GameManager : MonoBehaviour
         cannotAct = true;
         //Player reached end of stage
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        //Last scene is shop, so check if scene before that
-        if(currentSceneIndex >= SceneManager.sceneCountInBuildSettings - 2)
+
+        if (finalStage)
         {
             //WE'RE AT THE END OF THE GAME. DO SOMETHING
             //For now, return to title
@@ -174,6 +192,20 @@ public class GameManager : MonoBehaviour
             SaveGame();
             LoadScene("Shop"); //go to shop
         }
+        
+        ////Last scene is shop, so check if scene before that
+        //if(currentSceneIndex >= SceneManager.sceneCountInBuildSettings - 2)
+        //{
+        //    //WE'RE AT THE END OF THE GAME. DO SOMETHING
+        //    //For now, return to title
+        //    ReturnToTitle();
+        //}
+        //else
+        //{
+        //    player.ReachedEndOfLevel();
+        //    SaveGame();
+        //    LoadScene("Shop"); //go to shop
+        //}
     }
 
     // Update is called once per frame
@@ -239,6 +271,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitUntil(() => sceneFadeAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
         SceneManager.LoadScene(sceneName); 
     }
+
 
     private void OnApplicationQuit()
     {
