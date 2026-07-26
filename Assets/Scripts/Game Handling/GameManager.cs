@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     [Header("Other Managers")]
     //[SerializeField] OptionsManager optionsManager;
     [SerializeField] HUDManager hudManager;
+    [SerializeField] GameObject victoryScreen;
 
     [Header("References")]
     [SerializeField] PlayerMovement player;
@@ -193,7 +194,7 @@ public class GameManager : MonoBehaviour
         {
             //WE'RE AT THE END OF THE GAME. DO SOMETHING
             //For now, return to title
-            ReturnToTitle();
+            StartCoroutine(ShowVictory());
         }
         else
         {
@@ -221,6 +222,14 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    IEnumerator ShowVictory()
+    {
+        GameManager.cannotAct = true;
+        victoryScreen.SetActive(true);
+        yield return new WaitForSecondsRealtime(5);
+        ReturnToTitle();
     }
 
     //Save at start and end of level
