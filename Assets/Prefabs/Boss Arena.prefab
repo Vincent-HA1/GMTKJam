@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: fb7f77ab65e8ba34093dc8a6efe26e27, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3188d30d9e5eb83439c80ade47950f02, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -106,8 +106,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   deathExplosionPrefab: {fileID: 1254311449567420690, guid: 65a0ef2f1885a7348a33525508861651, type: 3}
-  healthPrefab: {fileID: 0}
-  maxHealth: 1
+  healthPrefab: {fileID: 2452513488980987811, guid: f1b51c4f3b05de743b12231c19cfe4ab, type: 3}
+  enemyHitSound: {fileID: 3227743046172793685, guid: 3c20cfd92edb3444285407edb5a98d71, type: 3}
+  maxHealth: 30
   patrol: 0
   hurtTime: 0.5
   minPatrolTime: 1.5
@@ -201,7 +202,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.3125, y: 4.0625}
+    oldSize: {x: 19.2, y: 10.8}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -220,7 +221,7 @@ Animator:
   m_GameObject: {fileID: 1452178180107790677}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 14ad8a657981a7e4bb0054c2477d1903, type: 2}
+  m_Controller: {fileID: 22100000, guid: 72ff06e5f5a574244836e4f6714fa14a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

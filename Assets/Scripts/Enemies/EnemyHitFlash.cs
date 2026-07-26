@@ -36,6 +36,7 @@ public class EnemyHitFlash : MonoBehaviour
     {
         // Set to flash color
         spriteRenderer.color = flashColor;
+        print(spriteRenderer.color);
 
         // Wait for the duration
         yield return new WaitForSeconds(flashDuration);
