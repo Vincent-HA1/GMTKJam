@@ -14,12 +14,14 @@ public class TitleScreen : MonoBehaviour
     [SerializeField] Button newGameButton;
     [SerializeField] Button continueGameButton;
     [SerializeField] Button quitButton;
+    [SerializeField] Button optionsButton;
     [SerializeField] GameObject titleScreen;
     [SerializeField] GameObject optionsScreen;
 
     EventSystem eventSystem;
     SaveData saveToLoad;
 
+    bool loadingScene = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +35,7 @@ public class TitleScreen : MonoBehaviour
         newGameButton.onClick.AddListener(() => StartGame());
         continueGameButton.onClick.AddListener(() => StartGame(true));
         quitButton.onClick.AddListener(QuitGame);
+        optionsButton.onClick.AddListener(OpenOptions);
         StartCoroutine(WaitForSceneFade());
     }
 
@@ -64,7 +67,23 @@ public class TitleScreen : MonoBehaviour
 
     private void Update()
     {
+        if (loadingScene) return;
+        if(inputHandler.pausePressed && optionsScreen.activeInHierarchy)
+        {
+            CloseOptions();
+        }
+    }
 
+    void OpenOptions()
+    {
+        titleScreen.SetActive(false);
+        optionsScreen.SetActive(true);
+    }
+
+    void CloseOptions()
+    {
+        titleScreen.SetActive(true);
+        optionsScreen.SetActive(false);
     }
 
     void StartGame(bool loadSave = false)
@@ -84,6 +103,7 @@ public class TitleScreen : MonoBehaviour
 
     void LoadScene(int sceneIndex)
     {
+        loadingScene = true;
         StartCoroutine(LoadSceneAfterFade(sceneIndex));
         EventSystem.current.enabled = false;
     }

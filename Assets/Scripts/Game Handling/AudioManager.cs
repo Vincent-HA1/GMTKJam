@@ -47,9 +47,17 @@ public class AudioManager : MonoBehaviour
 
         //Set up events, get the saved value and set it
         masterBar.onValueChanged.AddListener((value) => UpdateValues(PREF_MASTER, masterParam, value));
+        musicBar.onValueChanged.AddListener((value) => UpdateValues(PREF_MUSIC, musicParam, value));
+        sfxBar.onValueChanged.AddListener((value) => UpdateValues(PREF_SFX, sfxParam, value));
         float masterValue = PlayerPrefs.GetFloat(PREF_MASTER, defaultPerc);
+        float musicValue = PlayerPrefs.GetFloat(PREF_MUSIC, defaultPerc);
+        float sfxValue = PlayerPrefs.GetFloat(PREF_SFX, defaultPerc);
         masterBar.value = masterValue;
+        musicBar.value = musicValue;
+        sfxBar.value = sfxValue;
         UpdateValues(PREF_MASTER, masterParam, masterValue);
+        UpdateValues(PREF_MUSIC, musicParam, musicValue);
+        UpdateValues(PREF_SFX, sfxParam, sfxValue);
 
     }
 

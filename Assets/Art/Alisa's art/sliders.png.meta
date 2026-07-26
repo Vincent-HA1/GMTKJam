@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7a7cbc7c923d2684e9fc9c66d99886ed
+guid: 8712d601715e8434e9e195edfc8c0536
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,190 +110,127 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: UI_0
+      name: sliders_0
       rect:
         serializedVersion: 2
-        x: 362
-        y: 1022
-        width: 203
-        height: 224
+        x: 186
+        y: 920
+        width: 1033
+        height: 72
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 45f24aff70adedf45a877511b6a66e79
-      internalID: 405834289
+      spriteID: ccd885e28de980b4783ca85ce806318f
+      internalID: -1096771687
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UI_1
+      name: sliders_1
       rect:
         serializedVersion: 2
-        x: 726
-        y: 1006
-        width: 260
-        height: 240
+        x: 185
+        y: 723
+        width: 1033
+        height: 72
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 10b0a8d5911c4a544b4a5745b5297878
-      internalID: -1423627733
+      spriteID: 6c76718c8c46b2c4b921bed8b199b53c
+      internalID: 95615754
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UI_2
+      name: sliders_2
       rect:
         serializedVersion: 2
-        x: 1004
-        y: 1003
-        width: 260
-        height: 241
+        x: 1285
+        y: 657
+        width: 4
+        height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7cc4eac59da7eb1488450a3dda044e45
-      internalID: 393638151
+      spriteID: 78d3e4f0db86c774b8c44d2d9d6b2e14
+      internalID: 1918137784
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UI_3
+      name: sliders_3
       rect:
         serializedVersion: 2
-        x: 141
-        y: 760
-        width: 217
-        height: 216
+        x: 174
+        y: 568
+        width: 1033
+        height: 72
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00972160c9e2b5640baa32fe27725d99
-      internalID: 292526046
+      spriteID: 34bc114ce11976e4aa92651c2c45402c
+      internalID: 699692289
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UI_4
+      name: sliders_4
       rect:
         serializedVersion: 2
-        x: 728
-        y: 755
-        width: 259
-        height: 241
+        x: 1275
+        y: 503
+        width: 4
+        height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2cf82cb1a8d30ec41b5ef9c0db83c68e
-      internalID: 1563449360
+      spriteID: cfc018a2ef6a58f47955add0d1f6edf9
+      internalID: -1860231196
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UI_5
+      name: sliders_5
       rect:
         serializedVersion: 2
-        x: 1002
-        y: 757
-        width: 260
-        height: 241
+        x: 782
+        y: 98
+        width: 383
+        height: 388
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a7c01eccb01dfc042ad72b182d6afe0a
-      internalID: 1989962569
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UI_6
-      rect:
-        serializedVersion: 2
-        x: 1010
-        y: 695
-        width: 15
-        height: 5
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2495112906c9d59418e90bcfcdcde4d9
-      internalID: 2032121995
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UI_7
-      rect:
-        serializedVersion: 2
-        x: 1038
-        y: 515
-        width: 219
-        height: 226
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 657a151cedc3f2747a08f95b6059bc2e
-      internalID: -594119811
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UI_8
-      rect:
-        serializedVersion: 2
-        x: 53
-        y: 112
-        width: 524
-        height: 535
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7e500dcd5cfdec04caf1afeae3436b9b
-      internalID: 591244540
+      spriteID: d5a5e93efd415774ea3c8e4908255b37
+      internalID: 197246848
       vertices: []
       indices: 
       edges: []
@@ -309,15 +246,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      UI_0: 405834289
-      UI_1: -1423627733
-      UI_2: 393638151
-      UI_3: 292526046
-      UI_4: 1563449360
-      UI_5: 1989962569
-      UI_6: 2032121995
-      UI_7: -594119811
-      UI_8: 591244540
+      sliders_0: -1096771687
+      sliders_1: 95615754
+      sliders_2: 1918137784
+      sliders_3: 699692289
+      sliders_4: -1860231196
+      sliders_5: 197246848
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

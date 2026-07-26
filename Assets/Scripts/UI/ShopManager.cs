@@ -10,6 +10,9 @@ public class ShopManager : MonoBehaviour
 
     [Header("UI References")]
     [SerializeField] TMPro.TextMeshProUGUI fragmentsText;
+    [SerializeField] TMPro.TextMeshProUGUI descriptionText;
+    [SerializeField] TMPro.TextMeshProUGUI upgradeCostText;
+    [SerializeField] GameObject description;
     [SerializeField] List<UpgradeIcon> upgrades;
     [SerializeField] Button leaveShop;
     [SerializeField] Animator sceneFadeAnimator;
@@ -53,6 +56,8 @@ public class ShopManager : MonoBehaviour
                 //on hover and on click
                 //if cannot be bought, then
                 upgrade.BuyUpgrade += BuyUpgrade;
+                upgrade.ShowUpgrade += UpdateDescription;
+                upgrade.LeftIcon += HideDescription;
             }
             UpdateBuyableUpgrades();
         }
@@ -65,6 +70,17 @@ public class ShopManager : MonoBehaviour
         fragmentsText.text = currentSaveData.fragments.ToString();
     }
 
+    void UpdateDescription(int cost, string description)
+    {
+        this.description.SetActive(true);
+        descriptionText.text = description;
+        upgradeCostText.text = cost.ToString();
+    }
+
+    void HideDescription()
+    {
+        description.SetActive(false);
+    }
     void BuyUpgrade(UpgradeIcon upgradeToUnlock)
     {
         currentSaveData.upgrades.SetUnlocked(upgradeToUnlock.upgradeType);

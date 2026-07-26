@@ -6,26 +6,24 @@ using UnityEngine.UI;
 
 public class UpgradeIcon : MonoBehaviour
 {
-
+    public Action LeftIcon;
+    public Action<int, string> ShowUpgrade;
     public Action<UpgradeIcon> BuyUpgrade;
     [Header("Upgrade details")]
     public UpgradeType upgradeType;
-
+    [SerializeField] string upgradeDescription;
 
     [Header("UI References")]
-    [SerializeField] TMPro.TextMeshProUGUI priceText;
-    [SerializeField] GameObject priceDescription;
     [SerializeField] GameObject boughtIcon;
     public int upgradeCost;
 
-
+    bool upgradeBought = false;
     Button button;
     // Start is called before the first frame update
     void Start()
     {
         button = GetComponent<Button>();
         button.onClick.AddListener(SelectUpgrade);
-        priceText.text = upgradeCost.ToString();
     }
 
     // Update is called once per frame
@@ -46,8 +44,9 @@ public class UpgradeIcon : MonoBehaviour
         //deselect
         button.interactable = false;
         //remove cost
-        priceDescription.SetActive(false);
         boughtIcon.SetActive(true);
+        upgradeBought = true;
+        LeaveIcon();
     }
 
     public void CheckIfCanBeBought(float fragmentsAmount)
@@ -57,5 +56,15 @@ public class UpgradeIcon : MonoBehaviour
             //disable the button
             button.interactable = false;
         }
+    }
+
+    public void HoverOver()
+    {
+        if(!upgradeBought) ShowUpgrade?.Invoke(upgradeCost, upgradeDescription);
+    }
+
+    public void LeaveIcon()
+    {
+        LeftIcon?.Invoke();
     }
 }

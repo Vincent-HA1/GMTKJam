@@ -15,7 +15,9 @@ public class PauseMenu : MonoBehaviour
 
     [Header("UI References")]
     [SerializeField] GameObject background;
+    [SerializeField] GameObject pauseScreen;
     [SerializeField] GameObject pauseMenu;
+    [SerializeField] GameObject optionsMenu;
 
     [Header("Pause Menu References")]
     [SerializeField] Button resumeButton;
@@ -35,22 +37,30 @@ public class PauseMenu : MonoBehaviour
         quitButton.onClick.AddListener(QuitGame);
         pauseMenu.SetActive(false);
         restartButton.onClick.AddListener(Retry);
+        optionsButton.onClick.AddListener(OpenOptions);
         //returnToStageButton.onClick.AddListener(QuitGame);
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if (LevelManager.cannotAct && !paused) return;
+        if (GameManager.cannotAct && !paused) return;
         if (inputs.pausePressed && !paused)
         {
             PauseGame();
         }
         else if (inputs.cancelPressed || inputs.pausePressed)
         {
-            if (paused && pauseMenu.activeInHierarchy)
+            if (paused)
             {
-                ClosePauseScreen();
+                if (pauseMenu.activeInHierarchy)
+                {
+                    ClosePauseScreen();
+                }
+                else if (optionsMenu.activeInHierarchy)
+                {
+                    CloseOptions();
+                }
             }
         }
     }
@@ -58,6 +68,7 @@ public class PauseMenu : MonoBehaviour
     void PauseGame()
     {
         Time.timeScale = 0;
+        pauseScreen.SetActive(true);
         pauseMenu.SetActive(true);
         background.SetActive(true);
         EventSystem.current.SetSelectedGameObject(resumeButton.gameObject);
@@ -68,12 +79,25 @@ public class PauseMenu : MonoBehaviour
     void ClosePauseScreen()
     {
         background.SetActive(false);
+        pauseScreen.SetActive(false);
         pauseMenu.SetActive(false);
         Time.timeScale = 1;
         paused = false;
         GameManager.cannotAct = false;
         EventSystem.current.SetSelectedGameObject(null);
         inputs.ResetAllBools(); //Clear inputs on unpausing
+    }
+
+    void OpenOptions()
+    {
+        optionsMenu.SetActive(true);
+        pauseMenu.SetActive(false);
+    }
+
+    public void CloseOptions()
+    {
+        optionsMenu.SetActive(false);
+        pauseMenu.SetActive(true);
     }
 
     void Retry()
