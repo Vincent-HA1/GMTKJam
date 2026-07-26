@@ -858,11 +858,11 @@ public class PlayerMovement : MonoBehaviour
             // hit underside (head bump, so stop the rising input)
             Debug.Log("Collision from below (hit head).");
             inputHandler.jumpHeld = false;
-            if (verticalVelocity > 0)
-            {
-                //Make the player lose velocity somewhat (don't want to float under the platform)
-                verticalVelocity -= maxVerticalVelocity * platformBonkVelocityHit;
-            }
+            //if (verticalVelocity > 0)
+            //{
+            //    //Make the player lose velocity somewhat (don't want to float under the platform)
+            //    verticalVelocity -= maxVerticalVelocity * platformBonkVelocityHit;
+            //}
             //verticalVelocity = 0;
         }
 

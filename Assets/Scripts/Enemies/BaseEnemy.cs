@@ -129,8 +129,8 @@ public class BaseEnemy : MonoBehaviour
     protected virtual void UpdateAnims()
     {
         spriteRenderer.flipX = !hurt ? moveDirection.x >= 0 : spriteRenderer.flipX; //Only update when the enemy is not hurt (shouldn't be flipping in the hurt animation)
-        anim.SetFloat("Speed", moving ? 1 : 0);
-        anim.SetBool("Hurt", hurt);
+        //anim.SetFloat("Speed", moving ? 1 : 0);
+        //anim.SetBool("Hurt", hurt);
     }
 
     protected virtual void DetectPlayer()
