@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Companion : MonoBehaviour
 {
     [Header("Target")]
@@ -9,27 +10,25 @@ public class Companion : MonoBehaviour
 
     [Header("Follow Settings")]
     [SerializeField] private float followSpeed = 5f;
-    
-     
 
     [Header("Shooting Settings")]
-    [SerializeField] LayerMask enemyLayer;
-    [SerializeField] GameObject projectile;
-    [SerializeField] Transform shootPos;
-    [SerializeField] float shootingFrequencyPerSecond = 1;
-
+    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private GameObject projectile;
+    [SerializeField] private Transform shootPos;
+    [SerializeField] private float shootingFrequencyPerSecond = 1;
 
     // Internal tracking variables
-    private Vector3 initialOffset;
-    private Vector3 currentVelocity = Vector3.zero;
+    private Vector2 initialOffset;
+    private Vector2 currentVelocity = Vector2.zero;
     private bool isFacingRight = true;
     private bool attackUnlocked = false;
 
-    SpriteRenderer spriteRenderer;
+    private SpriteRenderer spriteRenderer;
+    private Rigidbody2D rb; // <--- Rigidbody reference
 
-    //Attacking
-    float shootTimer = 0;
-    GameObject currentEnemyTarget;
+    // Attacking
+    private float shootTimer = 0;
+    private GameObject currentEnemyTarget;
 
     public void SetAttackUnlocked()
     {
@@ -45,16 +44,24 @@ public class Companion : MonoBehaviour
         }
 
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Setup Rigidbody2D
+        rb = GetComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Kinematic; // Ensure it doesn't get pushed by collisions
+        //rb.interpolation = RigidbodyInterpolation2D.Interpolate; // <--- Prevents Cinemachine stutter!
+
         // Lock in starting offset
         initialOffset = transform.position - player.transform.position;
-
-        // Determine initial facing direction based on scale or movement
         isFacingRight = true;
     }
 
     private void Update()
     {
         if (GameManager.cannotAct) return;
+
+        // Sprite visual flipping is fine in Update
+        CheckPlayerDirection();
+
         AttackEnemies();
     }
 
@@ -62,8 +69,8 @@ public class Companion : MonoBehaviour
     {
         if (attackUnlocked && currentEnemyTarget != null)
         {
-            shootTimer -=Time.deltaTime;
-            if(shootTimer <= 0)
+            shootTimer -= Time.deltaTime;
+            if (shootTimer <= 0)
             {
                 Shoot();
             }
@@ -83,30 +90,27 @@ public class Companion : MonoBehaviour
         shootTimer = 1 / shootingFrequencyPerSecond;
     }
 
-
-    void LateUpdate()
+    // --- SWITCHED FROM LATEUPDATE TO FIXEDUPDATE ---
+    private void LateUpdate()
     {
         if (player == null) return;
 
-        // Check if player flipped (using localScale.x as standard direction indicator)
-        CheckPlayerDirection();
-
         // Calculate dynamic offset based on facing direction
-        Vector3 currentOffset = initialOffset;
-
+        Vector2 currentOffset = initialOffset;
         if (!isFacingRight)
         {
-            // Flip the X offset to move to the opposite shoulder
             currentOffset.x = -initialOffset.x;
         }
 
-        // Calculate final target position
-        Vector3 targetPosition = player.transform.position + currentOffset;
+        // Target position based on the player's RIGIDBODY position (not transform)
+        // If your player has a Rigidbody2D, reference playerRb.position instead!
+        Vector2 targetPosition = (Vector2)player.transform.position + currentOffset;//transform.position + currentOffset;
 
-        // Smoothly move toward the target
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref currentVelocity, 1f / followSpeed);
+        // Use Vector3.MoveTowards or Vector3.Lerp instead of SmoothDamp in FixedUpdate
+        Vector3 nextPosition = Vector3.MoveTowards(rb.position, targetPosition, followSpeed * Time.fixedDeltaTime);
+
+        rb.MovePosition(nextPosition);
     }
-
     private void CheckPlayerDirection()
     {
         isFacingRight = !player.flipX;
@@ -117,7 +121,6 @@ public class Companion : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy") && currentEnemyTarget == null)
         {
-            //Enemy has entered range
             currentEnemyTarget = collision.gameObject;
         }
     }
@@ -126,8 +129,7 @@ public class Companion : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            //Enemy has left range
-            if(collision.gameObject == currentEnemyTarget)
+            if (collision.gameObject == currentEnemyTarget)
             {
                 currentEnemyTarget = null;
                 ResetShootTimer();

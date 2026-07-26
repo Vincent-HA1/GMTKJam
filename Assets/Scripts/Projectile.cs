@@ -30,7 +30,7 @@ public class Projectile : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rigid.MovePosition(rigid.position + moveDir * moveSpeed * Time.deltaTime);
+        rigid.MovePosition(rigid.position + moveDir * moveSpeed * Time.fixedDeltaTime);
     }
 
 

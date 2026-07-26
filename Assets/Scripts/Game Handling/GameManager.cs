@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 {
 
     [Header("Other Managers")]
-    [SerializeField] OptionsManager optionsManager;
+    //[SerializeField] OptionsManager optionsManager;
     [SerializeField] HUDManager hudManager;
 
     [Header("References")]
@@ -218,7 +218,8 @@ public class GameManager : MonoBehaviour
     void SaveGame()
     {
         //Create the instance of SaveData and save the game
-        SaveData data = new SaveData(optionsManager.GetOptions(), SceneManager.GetActiveScene().buildIndex, fragmentAmount, currentPlayerUpgrades, currentPlayerStats);
+        //REMOVED OPTION MANAGER, JUST INITIALISE OPTIONS
+        SaveData data = new SaveData(new Options(), SceneManager.GetActiveScene().buildIndex, fragmentAmount, currentPlayerUpgrades, currentPlayerStats);
         SaveSystem.Save(data);
     }
 
@@ -232,7 +233,7 @@ public class GameManager : MonoBehaviour
             currentPlayerUpgrades = saveData.upgrades;
             currentPlayerStats = saveData.stats;
             //Restore saved options
-            optionsManager.SetOptions(saveData != null ? saveData.options : new Options());
+            //optionsManager.SetOptions(saveData != null ? saveData.options : new Options());
             hudManager.InitialiseUI(3 + currentPlayerStats.healthAdd, fragmentAmount, currentPlayerUpgrades.specialUnlocked);
         }
         else
