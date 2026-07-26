@@ -97,7 +97,7 @@ public class EnemySpawner : MonoBehaviour
         }
 
         // Spawn the enemy
-        GameObject enemy = Instantiate(randomEnemyPrefab, randomSpawnPos.position, Quaternion.identity, enemySpawnParent);
+        GameObject enemy = Instantiate(randomEnemyPrefab, randomSpawnPos.position - new Vector3(0, 0.5f, 0), Quaternion.identity, enemySpawnParent);
         BaseEnemy enemyScript = enemy.GetComponent<BaseEnemy>();
         enemyScript.Death += UpdateSpawnCount;
         if(enemyScript.GetType() == typeof(ShootingEnemy))

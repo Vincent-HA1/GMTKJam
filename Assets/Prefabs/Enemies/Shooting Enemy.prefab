@@ -102,7 +102,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.017073631, y: -0.7272429}
+  m_Offset: {x: 0.017073631, y: -0.38678405}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -113,7 +113,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.049962, y: 1.7955142}
+  m_Size: {x: 2.049962, y: 1.7357845}
   m_EdgeRadius: 0
 --- !u!212 &8603050529786846217
 SpriteRenderer:
@@ -246,6 +246,7 @@ MonoBehaviour:
     m_Bits: 64
   deathExplosionPrefab: {fileID: 1254311449567420690, guid: 65a0ef2f1885a7348a33525508861651, type: 3}
   healthPrefab: {fileID: 2452513488980987811, guid: f1b51c4f3b05de743b12231c19cfe4ab, type: 3}
+  enemyHitSound: {fileID: 3227743046172793685, guid: 3c20cfd92edb3444285407edb5a98d71, type: 3}
   maxHealth: 2
   patrol: 1
   hurtTime: 0.5

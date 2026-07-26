@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 5972180235675903218}
   - component: {fileID: 8908992452159222741}
   - component: {fileID: 2899311685776107740}
+  - component: {fileID: -7428800522277567152}
   m_Layer: 6
   m_Name: AlisaPlayer
   m_TagString: Player
@@ -141,6 +142,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   ignoreOnGround: 0
+  useHitFlash: 1
   leftFootPoint: {fileID: 1946312600387202891}
   rightFootPoint: {fileID: 8448626532730633354}
   headPosition: {fileID: 8448626532730633354}
@@ -219,7 +221,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 0
   m_CollisionDetection: 1
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!95 &5972180235675903218
 Animator:
   serializedVersion: 5
@@ -307,6 +309,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.0821738, y: 3.5849612}
   m_EdgeRadius: 0
+--- !u!114 &-7428800522277567152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679852195892455240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bae11135b01e935488465751a64ce995, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
 --- !u!1 &2362626099599658960
 GameObject:
   m_ObjectHideFlags: 0
@@ -464,7 +480,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2805697217124520891
 Transform:
   m_ObjectHideFlags: 0
@@ -487,7 +503,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8512536571993489714}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
