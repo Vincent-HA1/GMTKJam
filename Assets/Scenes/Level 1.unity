@@ -9927,6 +9927,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hudManager: {fileID: 1471269594}
+  victoryScreen: {fileID: 0}
   player: {fileID: 1016833888}
   boss: {fileID: 0}
   pauseMenu: {fileID: 637236284}
@@ -13169,8 +13170,8 @@ Transform:
   m_GameObject: {fileID: 1110449457}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 142.49, y: -1.79, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 142.25, y: -1.74, z: 0}
+  m_LocalScale: {x: 0.85633534, y: 0.8452464, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1967899117}
@@ -13207,18 +13208,18 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.26152027, y: -0.5182861}
+  m_Offset: {x: -0.14819205, y: -0.64377403}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.9375, y: 4.6875}
+    oldSize: {x: 5.24, y: 5.35}
     newSize: {x: 3.9375, y: 4.6875}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.2542584, y: 3.6509278}
+  m_Size: {x: 3.073683, y: 4.3266363}
   m_EdgeRadius: 0
 --- !u!212 &1110449460
 SpriteRenderer:
@@ -13261,7 +13262,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: a62acf5f450eb0c47a5abe34006e3d63, type: 3}
+  m_Sprite: {fileID: 591244540, guid: 7a7cbc7c923d2684e9fc9c66d99886ed, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
