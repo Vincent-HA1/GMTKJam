@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
         //Player events
         player.Healed += UpdateHealth;
         player.Hit += UpdateHealth;
-        player.Death += Respawn;
+        player.Death += FailLevel;
         player.CooldownChanged += hudManager.UpdateCooldown;
 
         //Boss
@@ -137,6 +137,15 @@ public class GameManager : MonoBehaviour
     //    hudManager.UpdateBigCoinIndicator(bigCoinIndex);
     //    currentStageSave.bigCoinsFound[bigCoinIndex] = 1; //set to found
     //}
+
+    void FailLevel()
+    {
+        print("hello");
+        cannotAct = true;
+        pauseMenu.OpenRetryMenu();
+        Time.timeScale = 0;
+    }
+
 
     void Respawn()
     {

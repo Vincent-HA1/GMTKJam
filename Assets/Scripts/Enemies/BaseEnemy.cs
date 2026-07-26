@@ -13,6 +13,7 @@ public class BaseEnemy : MonoBehaviour
     [Header("References")]
     [SerializeField] GameObject deathExplosionPrefab;
     [SerializeField] GameObject healthPrefab;
+    [SerializeField] GameObject enemyHitSound;
 
 
     [Header("Enemy Attributes")]
@@ -184,6 +185,7 @@ public class BaseEnemy : MonoBehaviour
         hurt = true;
         hurtTimer = hurtTime;
         hitFlash.Flash();
+        Instantiate(enemyHitSound);
         if (health <= 0)
         {
             Die();

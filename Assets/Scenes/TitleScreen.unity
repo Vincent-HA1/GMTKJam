@@ -365,7 +365,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 505e470bc8f5532408b66171083cf79f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionsManager: {fileID: 979497170}
   hudManager: {fileID: 0}
   player: {fileID: 0}
   boss: {fileID: 0}
@@ -1609,12 +1608,12 @@ AudioSource:
   m_GameObject: {fileID: 1559375024}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300002, guid: fbf12f876b443d9468899b405899441c, type: 2}
-  m_audioClip: {fileID: 8300000, guid: e34860b21d5631446b671265d49e6203, type: 3}
+  OutputAudioMixerGroup: {fileID: 3281554361767427392, guid: fbf12f876b443d9468899b405899441c, type: 2}
+  m_audioClip: {fileID: 8300000, guid: 5b811b84ca27582459418b3ef53a6e6e, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0

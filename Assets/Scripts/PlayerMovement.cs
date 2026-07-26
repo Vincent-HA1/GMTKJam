@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     [SerializeField] bool ignoreOnGround = false;
+    [SerializeField] bool useHitFlash = false;
     [Header("References")]
     [SerializeField] Transform leftFootPoint;
     [SerializeField] Transform rightFootPoint;
@@ -40,6 +41,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject crouchHurtbox;
     [SerializeField] GameObject bomb;
     [SerializeField] Companion bepo;
+
+    [Header("SFX")]
+    [SerializeField] GameObject playerAttackSound;
 
 
     [Header("Player Attributes")]
@@ -360,6 +364,7 @@ public class PlayerMovement : MonoBehaviour
         //If not attacking, start the attack
         if (!attacking)
         {
+            Instantiate(playerAttackSound);
             PunchAction?.Invoke();
             attacking = true;
             attackFinished = false;
@@ -369,6 +374,7 @@ public class PlayerMovement : MonoBehaviour
             // If the window to start another attack is still open, and the previous attack has finished
             if (attackBuffer > 0 && attackFinished)
             {
+                Instantiate(playerAttackSound);
                 PunchAction?.Invoke();
                 //Attack again
                 anim.SetTrigger("Attack");
@@ -604,7 +610,7 @@ public class PlayerMovement : MonoBehaviour
             spriteRenderer.color = new Color(1, 1, 1, Mathf.Lerp(startAlpha, endAlpha, alphaLerp));
             alphaLerp += 20 * Time.deltaTime;
         }
-        else
+        else if(!useHitFlash||!hurt)
         {
             spriteRenderer.color = new Color(1, 1, 1, 1);
             startAlpha = 1;
@@ -632,6 +638,7 @@ public class PlayerMovement : MonoBehaviour
     {
         print("set dead");
         Death?.Invoke();
+        Destroy(gameObject);
     }
 
     void ResetStates(bool resetVelocity = true)
@@ -757,6 +764,11 @@ public class PlayerMovement : MonoBehaviour
         health -= 1;
         hurtTimer = hurtTime;
         hurt = true;
+        if (useHitFlash)
+        {
+            print("flash");
+            GetComponent<EnemyHitFlash>().Flash();
+        }
         ResetStates();
         Hit?.Invoke(health);
         if (health <= 0)
