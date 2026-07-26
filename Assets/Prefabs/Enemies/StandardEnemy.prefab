@@ -244,7 +244,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   deathExplosionPrefab: {fileID: 1254311449567420690, guid: 65a0ef2f1885a7348a33525508861651, type: 3}
-  foodPrefab: {fileID: 0}
+  healthPrefab: {fileID: 2452513488980987811, guid: f1b51c4f3b05de743b12231c19cfe4ab, type: 3}
   maxHealth: 3
   patrol: 1
   hurtTime: 0.5

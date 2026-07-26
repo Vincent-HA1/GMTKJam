@@ -12,7 +12,7 @@ public class BaseEnemy : MonoBehaviour
 
     [Header("References")]
     [SerializeField] GameObject deathExplosionPrefab;
-    [SerializeField] GameObject foodPrefab;
+    [SerializeField] GameObject healthPrefab;
 
 
     [Header("Enemy Attributes")]
@@ -198,16 +198,16 @@ public class BaseEnemy : MonoBehaviour
     {
         Death?.Invoke();
         Instantiate(deathExplosionPrefab, transform.position, Quaternion.identity, null);
-        DropFood();
+        DropHealth();
         Destroy(gameObject);
     }
 
-    void DropFood()
+    void DropHealth()
     {
-        //float random = (float)UnityEngine.Random.Range(1, 11) / 10;
-        //if (random <= chanceForFoodDrop)
-        //{
-        //    Instantiate(foodPrefab, transform.position, Quaternion.identity, null);
-        //}
+        float random = (float)UnityEngine.Random.Range(1, 11) / 10;
+        if (random <= chanceForFoodDrop)
+        {
+            Instantiate(healthPrefab, transform.position + new Vector3(0, -0.5f, 0), Quaternion.identity, null);
+        }
     }
 }
