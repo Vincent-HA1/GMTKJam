@@ -16,6 +16,7 @@ public class PauseMenu : MonoBehaviour
     [Header("UI References")]
     [SerializeField] GameObject background;
     [SerializeField] GameObject pauseScreen;
+    [SerializeField] GameObject retryMenu;
     [SerializeField] GameObject pauseMenu;
     [SerializeField] GameObject optionsMenu;
 
@@ -100,12 +101,18 @@ public class PauseMenu : MonoBehaviour
         pauseMenu.SetActive(true);
     }
 
-    void Retry()
+    public void OpenRetryMenu()
+    {
+        pauseScreen.SetActive(true);
+        retryMenu.SetActive(true);
+    }
+
+    public void Retry()
     {
         RetryStage?.Invoke();
     }
 
-    void QuitGame()
+    public void QuitGame()
     {
         Quit?.Invoke();
     }

@@ -6,6 +6,7 @@ public class Bomb : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] GameObject hitbox;
+    [SerializeField] GameObject bombSoundEffect;
 
     [Header("Throw Motion Settings")]
     [SerializeField] private float horizontalSpeed = 8f;     // Horizontal speed
@@ -20,6 +21,7 @@ public class Bomb : MonoBehaviour
     private bool hasExploded = false;
 
     bool setDirection = false;
+
 
     private void Awake()
     {
@@ -73,6 +75,7 @@ public class Bomb : MonoBehaviour
         hasExploded = true;
         currentVelocity = Vector2.zero; // Freeze motion
         anim.SetTrigger("Explode");
+        Instantiate(bombSoundEffect);
         circleCollider.enabled = false;
     }
 

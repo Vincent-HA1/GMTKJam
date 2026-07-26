@@ -408,6 +408,7 @@ MonoBehaviour:
   crouchHurtbox: {fileID: 3183806682459692664}
   bomb: {fileID: 5650989899885202604, guid: e6af6340d4500fb48b1a15ba53e857d4, type: 3}
   bepo: {fileID: 0}
+  playerAttackSound: {fileID: 2336011711968713539, guid: e4479e6f918b44347ac4aaba48a613d9, type: 3}
   maxHealth: 3
   hitInvincibilityDuration: 2
   groundMoveSpeed: 7

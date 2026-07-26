@@ -41,6 +41,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject bomb;
     [SerializeField] Companion bepo;
 
+    [Header("SFX")]
+    [SerializeField] GameObject playerAttackSound;
+
 
     [Header("Player Attributes")]
     [SerializeField] float maxHealth = 3;
@@ -360,6 +363,7 @@ public class PlayerMovement : MonoBehaviour
         //If not attacking, start the attack
         if (!attacking)
         {
+            Instantiate(playerAttackSound);
             PunchAction?.Invoke();
             attacking = true;
             attackFinished = false;
@@ -369,6 +373,7 @@ public class PlayerMovement : MonoBehaviour
             // If the window to start another attack is still open, and the previous attack has finished
             if (attackBuffer > 0 && attackFinished)
             {
+                Instantiate(playerAttackSound);
                 PunchAction?.Invoke();
                 //Attack again
                 anim.SetTrigger("Attack");
