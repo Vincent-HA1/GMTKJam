@@ -836,35 +836,35 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        //CHECK FOR COLLISIONS WITH SOLID SURFACES
-        //Check if this is ground
-        int otherLayer = collision.gameObject.layer;
-        if ((groundLayer.value & (1 << otherLayer)) == 0) return;
+        ////CHECK FOR COLLISIONS WITH SOLID SURFACES
+        ////Check if this is ground
+        //int otherLayer = collision.gameObject.layer;
+        //if ((groundLayer.value & (1 << otherLayer)) == 0) return;
 
-        // guard: expect one contact but handle 0 defensively
-        if (collision.contactCount == 0)
-            return;
-        // use the single contact (no averaging)
-        ContactPoint2D contact = collision.GetContact(0);
-        const float threshold = 0.5f;
-        Vector2 normal = contact.normal; // points from the other collider -> this collider
-        if (normal.y > 0) //For standing on top of objects, there is no threshold
-        {
-            // landed on top of the object (ground under us)
-            Debug.Log("Collision from above (landed on top of object).");
-        }
-        else if (normal.y < -threshold) //For bumping head on objects
-        {
-            // hit underside (head bump, so stop the rising input)
-            Debug.Log("Collision from below (hit head).");
-            inputHandler.jumpHeld = false;
-            //if (verticalVelocity > 0)
-            //{
-            //    //Make the player lose velocity somewhat (don't want to float under the platform)
-            //    verticalVelocity -= maxVerticalVelocity * platformBonkVelocityHit;
-            //}
-            //verticalVelocity = 0;
-        }
+        //// guard: expect one contact but handle 0 defensively
+        //if (collision.contactCount == 0)
+        //    return;
+        //// use the single contact (no averaging)
+        //ContactPoint2D contact = collision.GetContact(0);
+        //const float threshold = 0.5f;
+        //Vector2 normal = contact.normal; // points from the other collider -> this collider
+        //if (normal.y > 0) //For standing on top of objects, there is no threshold
+        //{
+        //    // landed on top of the object (ground under us)
+        //    Debug.Log("Collision from above (landed on top of object).");
+        //}
+        //else if (normal.y < -threshold) //For bumping head on objects
+        //{
+        //    // hit underside (head bump, so stop the rising input)
+        //    Debug.Log("Collision from below (hit head).");
+        //    inputHandler.jumpHeld = false;
+        //    //if (verticalVelocity > 0)
+        //    //{
+        //    //    //Make the player lose velocity somewhat (don't want to float under the platform)
+        //    //    verticalVelocity -= maxVerticalVelocity * platformBonkVelocityHit;
+        //    //}
+        //    //verticalVelocity = 0;
+        //}
 
     }
 }

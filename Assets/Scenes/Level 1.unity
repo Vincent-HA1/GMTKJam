@@ -12514,10 +12514,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: AlisaPlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 1946312600387202891, guid: 949f46db56ea00e4cba5c0c5a3acac32, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.453
+      objectReference: {fileID: 0}
+    - target: {fileID: 1946312600387202891, guid: 949f46db56ea00e4cba5c0c5a3acac32, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.109
+      objectReference: {fileID: 0}
     - target: {fileID: 3076919351976472513, guid: 949f46db56ea00e4cba5c0c5a3acac32, type: 3}
       propertyPath: bepo
       value: 
       objectReference: {fileID: 1885369919}
+    - target: {fileID: 3360780894677578325, guid: 949f46db56ea00e4cba5c0c5a3acac32, type: 3}
+      propertyPath: m_AngularDrag
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8448626532730633354, guid: 949f46db56ea00e4cba5c0c5a3acac32, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.183
+      objectReference: {fileID: 0}
+    - target: {fileID: 8448626532730633354, guid: 949f46db56ea00e4cba5c0c5a3acac32, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.163
+      objectReference: {fileID: 0}
     - target: {fileID: 8765006173344394784, guid: 949f46db56ea00e4cba5c0c5a3acac32, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
